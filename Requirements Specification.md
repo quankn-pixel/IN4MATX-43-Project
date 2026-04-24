@@ -1,3 +1,10 @@
+Matthew Contreras (mtcontr2)
+Dominic Diaz (domind5)
+Quan Nguyen (quankn)
+Jianhao Zhang (jianhz4)
+Niki Chen Chen (nchenche)
+
+
 # **1\. Executive Summary**
 
 ![][image1]  
