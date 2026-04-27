@@ -21,4 +21,37 @@ The system includes the following main parts:
 - Reporting system (handles unsafe content)
 
 ---
+## 2. Main System Components
+
+The system includes the following main parts:
+
+- Map system (shows nearby posts)
+- Post system (stores and manages posts)
+- Upload system (handles creating new posts)
+- Tag and filter system (helps users search)
+- Chat system (for nearby communication)
+- Profile system (user info and posts)
+- Privacy system (controls location sharing)
+- Reporting system (handles unsafe content)
+
+---
+
+## 3. UI Structure
+
+### Map Screen
+This is the main screen where users can see nearby animal posts on a map. It also allows searching and filtering.
+
+### Post Detail Screen
+Shows the full details of a post, including the image, caption, tags, and approximate location.
+
+### Upload Screen
+Allows users to create a post by adding media, tags, captions, and privacy settings.
+
+### Profile Screen
+Displays user information and their posts.
+
+### Nearby Chat Screen
+Allows users to chat with others nearby. Messages are temporary and will expire.
+
+---
 
