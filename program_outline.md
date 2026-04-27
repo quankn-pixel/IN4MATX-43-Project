@@ -104,3 +104,125 @@ Allows users to chat with others nearby. Messages are temporary and will expire.
 - Users shall be able to block others.
 
 ---
+
+## 5. Use Cases
+
+### 5.1 View Nearby Posts
+
+**Basic Flow**
+1. User opens the map  
+2. System shows nearby posts  
+3. User taps a pin  
+4. Post details are shown  
+
+**Alternative Flow**
+- User searches or filters  
+
+**Exceptional Flow**
+- Location is off → system asks user to enable it  
+
+---
+
+### 5.2 Upload Post
+
+**Basic Flow**
+1. User opens upload page  
+2. User adds media  
+3. User adds caption and tags  
+4. User selects privacy settings  
+5. User submits post  
+6. System processes and shows the post  
+
+**Alternative Flow**
+- User chooses private/followers-only  
+
+**Exceptional Flow**
+- Upload fails due to no internet  
+
+---
+
+### 5.3 View Post Details
+
+**Basic Flow**
+1. User selects a post  
+2. System shows full details  
+
+**Alternative Flow**
+- Access from profile  
+
+**Exceptional Flow**
+- Post not available  
+
+---
+
+### 5.4 Filter Posts
+
+**Basic Flow**
+1. User applies filter  
+2. System updates map  
+
+**Alternative Flow**
+- Switch between recent and all  
+
+**Exceptional Flow**
+- No results found  
+
+---
+
+### 5.5 Nearby Chat
+
+**Basic Flow**
+1. User opens chat  
+2. User sends message  
+3. System displays message  
+
+**Alternative Flow**
+- Join existing chat  
+
+**Exceptional Flow**
+- No users nearby  
+
+---
+
+### 5.6 Manage Profile
+
+**Basic Flow**
+1. User opens profile  
+2. User edits info  
+3. System saves changes  
+
+**Alternative Flow**
+- Change visibility  
+
+**Exceptional Flow**
+- Save fails  
+
+---
+
+### 5.7 Manage Privacy
+
+**Basic Flow**
+1. User enables privacy settings  
+2. System applies settings  
+
+**Alternative Flow**
+- Disable location  
+
+**Exceptional Flow**
+- Permission denied  
+
+---
+
+### 5.8 Report User or Post
+
+**Basic Flow**
+1. User reports content  
+2. System records report  
+
+**Alternative Flow**
+- User cancels  
+
+**Exceptional Flow**
+- Report fails  
+
+
