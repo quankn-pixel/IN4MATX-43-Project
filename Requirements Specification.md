@@ -1,3 +1,7 @@
+WILDSPOT
+
+Contributors: 
+
 Matthew Contreras (mtcontr2)
 Dominic Diaz (domind5)
 Quan Nguyen (quankn)
