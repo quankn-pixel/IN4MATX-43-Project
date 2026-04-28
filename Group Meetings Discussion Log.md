@@ -108,7 +108,7 @@ Topic for Next Meeting:
 
 MEETING SUMMARY:
 
-- Name of the app will be Wildspot
+- Name of the app will be Wildspot (can change later)
 - Established hook, pitch, and key features of Wildspot
 - Additional Security Feature
 
