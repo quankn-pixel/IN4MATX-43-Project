@@ -9,6 +9,7 @@ Niki Chen Chen (nchenche)
 
 ![][image1]
 Objective
+
 Our program, Wildspot, is a mobile app available to both IOS and Android that offers a new social media platform where users can post photos and videos of wild animals, and interact with other animal lovers in their area through posts and chatrooms. Through this platform, we aim for animal-loving communities to be able to connect without the constant concern of their safety.
 
 The Problem
@@ -20,14 +21,14 @@ The Proposed Solution
 To prevent any harm to our users, Wildspot consists of several privacy features, such as preventing users’ posts from being uploaded immediately. This feature prevents any images or videos that violate our policy. Additionally, our users can choose the option to appear anonymous. Our chat box feature allows users to interact with users in their area. Once they leave the area, all of their chat histories will be hidden. This prevents users from having unwanted digital footprints. We are dedicated to safety features and moderation to ensure all users get the best experience with our app.
 
 Key Features
-Geolocation map
-Delay in publishing posts or videos
-Tag animals
-Users can create/join chatrooms near their location
+- Geolocation map
+- Delay in publishing posts or videos
+- Tag animals
+- Users can create/join chatrooms near their location
 
 Obstacles
-Prevent & filter misleading content
-Inappropriate use of the app 
+- Prevent & filter misleading content
+- Inappropriate use of the app 
 
 
 # **2\. Application Context / Environmental Constraints**
