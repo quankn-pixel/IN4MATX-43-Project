@@ -1,6 +1,6 @@
 PROJECT WILDSPOT
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 MEMBERS:
 
@@ -10,7 +10,7 @@ MEMBERS:
 -  Quan Nguyen - Architect
 -  Jianhao Zhang - Programmer 
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 4/17/26
 
@@ -63,7 +63,7 @@ MEETING SUMMARY:
 - Listed mutliple features of the program both for user safety & security and functionality of the system.
 - Established a prototype of the UI of the program
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
 4/24/26
 
@@ -112,5 +112,90 @@ MEETING SUMMARY:
 - Established hook, pitch, and key features of Wildspot
 - Additional Security Feature
 
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------
 
+5/1/26
+
+Members Present:
+
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+AI Responses (all responses on Google Doc AI Responses Tab 
+https://docs.google.com/document/d/1Bs7rtScuJic7nM1xyWIw-jhCc4nui7sT4x4k7bUhLh0/edit?usp=sharing)
+
+MEETING SUMMARY:
+
+- Answered steps 1-3 and pasted responses in google doc (see above)
+
+----------------------------------------------------------------------------------------
+
+5/7/26
+
+Members Present:
+
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+Zoom Meeting:
+
+Established Components
+- Front-end(UI) - Dominic Diaz & Niki Chen Chen
+- Back-end - Matthew Contreras
+- Database - Jianhao Zhang
+- Documentation - Quan Nguyen
+
+Best AI Response for Components needed:
+
+- Jianhao Zhang (See doc)
+
+Architecture Style
+- MVC
+- Client Server
+- Layered Architecture
+
+How to Create the Map (UCI Specifically):
+- Take photos around campus
+
+MEETING SUMMARY:
+
+- Established components
+- Decided best AI response
+- Established architecture styles to mimic
+- How to create the map (UCI specifically)
+
+----------------------------------------------------------------------------------------
+
+5/8/26
+
+Members Present:
+
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+Assigned HW2 parts
+
+- Overall Architectural Summary - Jianhao Zhang
+- Platforms and Programming Languages - Quan Nguyen
+- Communication Protocols - Dominic Diaz
+- Examples of Component Functions and Connector Communications - Niki Chen Chen & Matthew Contreras
+
+Before Next Meeting:
+- Finish all parts of HW2
+- Finish draft for AI
+- Create the first prototype
+
+MEETING SUMMARY:
+
+- Assigned HW2 parts
+
+----------------------------------------------------------------------------------------
