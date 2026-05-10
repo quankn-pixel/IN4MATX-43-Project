@@ -160,15 +160,26 @@ Architecture Style
 - Client Server
 - Layered Architecture
 
+Communication 
+- HTTPS requests
+
+Cloud Storage Provider
+- Firebase
+
 How to Create the Map (UCI Specifically):
 - Take photos around campus
 
+Established Language for System
+
+- React Native
 MEETING SUMMARY:
 
 - Established components
 - Decided best AI response
 - Established architecture styles to mimic
 - How to create the map (UCI specifically)
+- Established communication software
+- Established cloud storage provider
 
 ----------------------------------------------------------------------------------------
 
@@ -184,10 +195,11 @@ Members Present:
 
 Assigned HW2 parts
 
-- Overall Architectural Summary - Jianhao Zhang
+- Overall Architectural Summary - Quan Nguyen
 - Platforms and Programming Languages - Quan Nguyen
 - Communication Protocols - Dominic Diaz
 - Examples of Component Functions and Connector Communications - Niki Chen Chen & Matthew Contreras
+- Prototype - Jianhao Zhang
 
 Before Next Meeting:
 - Finish all parts of HW2
