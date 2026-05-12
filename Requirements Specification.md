@@ -385,7 +385,7 @@ MapScreen.onFilterChange(input) → { tag: "deer" } stored in local state
 
 - Step 3 - Frontend shows error → ReportModal.setError(message) → keeps modal open, shows error message
 
-### **Use case 5: Manage Saved Posts **
+### **Use case 5: Manage Saved Posts**
 
 ### **User taps save icon**
 
