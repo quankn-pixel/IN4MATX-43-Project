@@ -24,3 +24,20 @@ Frontend Upload Screen
 → SQLite database stores post data and image path
 → Backend returns JSON response
 → Frontend can retrieve saved posts again
+
+## How to Run the Prototype
+
+### Start the Backend Server
+
+From the prototype backend folder, run:
+
+```bash
+node server.js
+
+The backend runs at: http://localhost:3000
+
+##To check saved posts, open:http://localhost:3000/api/posts
+
+##Start the Frontend UI：cd wildspot-ui  npm start
+
+#Then open:http://localhost:8081
