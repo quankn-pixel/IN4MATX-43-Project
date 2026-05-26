@@ -437,7 +437,7 @@ https://www.figma.com/design/6pJUuzoFDrzrUnjQwXQJU8/WildSpot-Design?node-id=100-
 
 ### **Heuristic Evaluation**
 
-**Visiblity of System Status**###
+**Visiblity of System Status**
 - The app displays loading indicators and confirmation messages durign uploads, profile updates, filtering, and reporting actions
 - The "Upload Sighting" screen shows publishing status while a post is being uploaded
 - The map screen updates nearby sightings dynamically and visually displays animal pins on the map
