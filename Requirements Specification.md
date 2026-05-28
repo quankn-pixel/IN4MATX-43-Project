@@ -430,5 +430,81 @@ MapScreen.onFilterChange(input) → { tag: "deer" } stored in local state
 
 Prototype
 
+- Check prototype file
 
+### **UI for Wildspot**
+https://www.figma.com/design/6pJUuzoFDrzrUnjQwXQJU8/WildSpot-Design?node-id=100-4&t=WVPBl2ic74VSK93T-1
 
+### **Heuristic Evaluation**
+
+**Visiblity of System Status**
+- The app displays loading indicators and confirmation messages durign uploads, profile updates, filtering, and reporting actions
+- The "Upload Sighting" screen shows publishing status while a post is being uploaded
+- The map screen updates nearby sightings dynamically and visually displays animal pins on the map
+- Show "Loading..." when posts, map pins, profiles, or chat messages are loading.
+- Chat messages appear instantly inside nearby chat rooms to indicate successful sending.
+- Show "Uploaded successfully," "Report submitted," or "Failed to upload" after actions
+- User receive confirmation or error feedback after reporting a post or changing privacy settings
+
+**Match System Words to the Real World**
+- The interface uses familiar labels such as "Explore," "Sightings," "Upload," "Chat," Profile," and "Publish Sighting."
+- Animal categories use real-world terms like "Bird," "Duck", "Deer," and "Mammals."
+- The map interface uses recognizable pins and locaiton visuals to represent nearby wildlife sightings
+- Profile statistics such as sightings, verifications, and species are displayed in a format similar to existing social media platforms
+
+**User Control and Freedom**
+- Users can freely navigate between screens using the different bottom bar
+- THey can edit privacy settings, cancel uploads before publishing, switch between map filters, and choose how much location information to share.
+- Users can enable or disable privacy settings such as delayed posting and approximate location, before publishing a sighting
+- Users can choose hashtags, categories, and uploaded media before submitting a post
+- Users may leave nearby chatrooms or return to previous screens without losing navigation control
+
+**Consistency and Standards**
+- The UI maintains a consistent color palette, typography, spacing, and bottom navigation structure across all screens.
+- Buttons such as "Publish Sighting," "Follow," and "Post Comment" follow a consistent visual style
+- Similar layouts are used for posts, profile cards, tags, comments, and filters throughout the application
+- Icons and navigation behavior remain consistent across the map, profile, upload, and chat interfaces
+- The prototype application maintained a consistent style across background, tabs, button styles, icon usage, and typography. Messages sent by users are displayed in green, while replies and messages from others are displayed in gray
+
+**Error Prevention**
+- The app includes privacy reminders explaining that exact GPS coordinates ar ehidden to protecct wildelife and user safety
+- Locaiton blurring and delayed posting reduce the risk of real-time tracking
+- Users must select media before publishing a sighting to prevent empty uploads
+- Reporting flows require users to choose a report reason before submission
+- The upload interface includes category tags and placeholders to guide users toward properly formatted posts
+
+**Recognition rather than Recall**
+- Navigation icons and labels remain visible at the bottom of every screen, reducing the need for memorization
+- Animal categories and filter tags are displayed visually for quick recognition
+- Previously entered captions, tags, and privacy settings remain visible during the upload process
+- Search bars display common search results
+- Can click on the image of the post on the explore tab to view the post
+
+**Accelerators**
+- Added easy access with a press of a button to view specific animal categories such as mammals, birds, insects, amphibians, etc.
+- Can categorize comments to view the newest comments first, or in other ways
+- Convenient and easy access to all sections of the program, such as explore, sightings, add, etc. at the bottom of the screen
+
+**Minimalist Design**
+- The interface uses clean layouts, large wildfire imagery, and limited text clutter to maintain readability.
+- Important actions such as uploading, filtering, and commenting are visually emphasized with color or bolded.
+- Users can toggle if they want a post delay or incognito mode with a smple button press
+- Each section of the app only has its necessities
+
+**Help Users Recognize and Recover from Errors**
+- Informs the user if their username or email address has already been used to create an account
+- Allows users to change their password if they forgot them or are facing a security breach
+- Notifies the user if they input the wrong password for the username or email address
+- Allow users to delete their posts and comments
+- Error states display clear feedback messages for failed uploads, unavailable posts, or unsuccessful reports.
+- Empty states are shown when no sightings or nearby chats are available
+- Users can retry failed actions without restarting the application
+
+**Help and Documentation**
+- Explains protection, whether it is active or not, to the user to blur the GPS coordinates and delay the post by an hour
+- Caption box explains what the user can put (What they saw, describe behavior or setting, etc.)
+- The hashtag box displays examples of hashtags the user can use
+- In the "add" part of the app, it displays "tap to uplaod photo or video, maximum file size 25MB."
+- The comment box displays advice to the user on what to comment
+- Search bar displays what the user can search for (urban parks, species, etc.)
+- Placeholder text and upload instructions guide users when creating sightings or interacting with chats

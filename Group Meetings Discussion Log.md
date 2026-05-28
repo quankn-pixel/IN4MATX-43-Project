@@ -211,3 +211,51 @@ MEETING SUMMARY:
 - Assigned HW2 parts
 
 ----------------------------------------------------------------------------------------
+
+5/15/26
+
+Members Present:
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+Split up and assign HW3 & HW4 parts
+
+HW3 
+- Part 1 - Dominic Diaz
+- Part 2 - Matthew Contreras & Niki Chen Chen
+
+HW4
+- Quan Nguyen
+- Jianhao Zhang
+
+HW4 Testing parts
+TBD
+
+MEETING SUMMARY:
+- Assigned HW3 & HW4 parts
+
+----------------------------------------------------------------------------------------
+
+5/22/26
+
+Members Present:
+
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+Continue HW3 and HW4 parts
+
+Before Next Meeting:
+- Finish prototypes
+- Assign who gets what part to test
+
+MEETING SUMMARY:
+- Continue HW3 and HW4 parts
+
+----------------------------------------------------------------------------------------
