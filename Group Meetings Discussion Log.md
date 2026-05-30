@@ -259,3 +259,28 @@ MEETING SUMMARY:
 - Continue HW3 and HW4 parts
 
 ----------------------------------------------------------------------------------------
+
+5/29/26
+
+Members Present:
+
+- Matthew Contreras
+- Dominic Diaz
+- Quan Nguyen
+- Niki Chen Chen
+- Jianhao Zhang
+
+Finished with HW3, shift focus to HW4. Matthew, Dominic, Niki on Test Plan, Quan and
+Jianhao on programming and implementing test cases
+Taking notes on other project demos - lots of Expo Go usage
+Most people using Google Maps for locational services
+Firebase for Database services
+
+Before Next Meeting:
+- Finish HW4
+- Prepare documentation for HW 5
+
+MEETING SUMMARY:
+- Continue HW3 and HW4 parts
+
+----------------------------------------------------------------------------------------
