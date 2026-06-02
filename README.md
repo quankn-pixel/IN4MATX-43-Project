@@ -284,3 +284,18 @@ MEETING SUMMARY:
 - Continue HW3 and HW4 parts
 
 ----------------------------------------------------------------------------------------
+6/2/26
+
+Members Present:
+
+- Quan Nguyen
+- Jianhao Zhang
+
+Before Next Meeting:
+- Finish HW4
+
+MEETING SUMMARY:
+- Update Test_Plan with new test cases
+- Include coverage for auxiliary html files
+
+----------------------------------------------------------------------------------------
