@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#204c3a" />
+    <meta name="description" content="Wildspot helps people discover and share nearby animal sightings safely." />
+    <title>Wildspot</title>
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin=""
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Wildspot mobile app">
+      <section class="screen active" id="map-screen" aria-labelledby="map-title">
+        <header class="screen-header floating">
+          <div class="brand-lockup">
+            <span class="menu-mark">≡</span>
+            <p class="brand-wordmark" id="map-title">WILDSPOT</p>
+          </div>
+          <button class="round-button" id="privacy-toggle" aria-label="Toggle location privacy">♧</button>
+        </header>
+
+        <section class="status-panel" aria-label="Live service status">
+          <div class="status-item" data-service="database"><span></span>Database</div>
+          <div class="status-item" data-service="auth"><span></span>Auth</div>
+          <div class="status-item" data-service="storage"><span></span>Storage</div>
+          <div class="status-item" data-service="realtime"><span></span>Realtime</div>
+        </section>
+
+        <section class="map-canvas" aria-label="Nearby sightings map">
+          <div id="uci-map" aria-label="UCI campus map"></div>
+          <div id="pin-layer" class="fallback-pin-layer"></div>
+          <button class="locate-button" id="locate-button" aria-label="Use current location">⌖</button>
+        </section>
+
+        <section class="map-sheet" aria-label="Sightings list">
+          <div class="grabber"></div>
+          <label class="search-field">
+            <span>⌕</span>
+            <input id="search-input" type="search" placeholder="Search urban parks or species..." />
+          </label>
+          <div class="filter-row" id="filter-row">
+            <button class="pill active" data-filter="all">All</button>
+            <button class="pill" data-filter="Bird">Birds</button>
+            <button class="pill" data-filter="Mammal">Mammals</button>
+            <button class="pill" data-filter="Other">Other</button>
+          </div>
+          <div class="map-count-badge" id="map-count-badge">0 photo sightings</div>
+          <div class="protection-chip">Location Blurred for Protection</div>
+          <div class="sheet-title">
+            <h2>Location Blurred for Protection</h2>
+            <span id="result-count">0 posts</span>
+          </div>
+          <div class="post-list" id="post-list"></div>
+        </section>
+      </section>
+
+      <section class="screen" id="detail-screen" aria-labelledby="detail-title">
+        <header class="screen-header compact">
+          <button class="icon-button back-button" aria-label="Back">‹</button>
+          <div>
+            <p class="kicker" id="detail-meta">Sighting</p>
+            <h1 id="detail-title">Post detail</h1>
+          </div>
+          <button class="icon-button" id="report-post" aria-label="Report post">!</button>
+        </header>
+        <article class="detail-card" id="detail-card"></article>
+      </section>
+
+      <section class="screen" id="sightings-screen" aria-labelledby="sightings-title">
+        <header class="screen-header compact">
+          <div class="brand-lockup">
+            <span class="menu-mark">≡</span>
+            <div>
+              <p class="kicker">All logged animals</p>
+              <h1 id="sightings-title">Sightings</h1>
+            </div>
+          </div>
+          <button class="round-button" id="sightings-refresh" aria-label="Refresh sightings">↻</button>
+        </header>
+        <section class="sightings-summary">
+          <strong id="sightings-total">0 sightings</strong>
+          <span>Tap any animal to view details.</span>
+        </section>
+        <div class="sightings-list" id="sightings-list"></div>
+      </section>
+
+      <section class="screen" id="upload-screen" aria-labelledby="upload-title">
+        <header class="screen-header compact">
+          <button class="text-button" id="cancel-upload">Cancel</button>
+          <h1 id="upload-title">Log New Sighting</h1>
+          <button class="text-button strong" type="submit" form="upload-form">Share →</button>
+        </header>
+
+        <form class="upload-form" id="upload-form">
+          <label class="media-picker" id="media-picker">
+            <input id="media-input" type="file" accept="image/*,video/*" />
+            <span class="media-empty">
+              <strong>Tap to upload photo or video</strong>
+              <small>Maximum file size: 25MB</small>
+            </span>
+            <img id="media-preview" alt="" />
+          </label>
+
+          <div class="form-grid">
+            <label>
+              Species Category
+              <input id="category" type="text" placeholder="Dog, duck, deer..." autocomplete="off" />
+            </label>
+            <label>
+              Visibility
+              <select id="visibility">
+                <option value="Public">Public</option>
+                <option value="Followers">Followers</option>
+                <option value="Private">Private</option>
+              </select>
+            </label>
+          </div>
+          <div class="species-chips" aria-label="Common species categories">
+            <button type="button">Dog</button>
+            <button type="button">Duck</button>
+            <button type="button">Deer</button>
+            <button type="button">Other</button>
+          </div>
+
+          <label>
+            Caption
+            <textarea id="caption" rows="4" placeholder="What did you spot? Describe the behavior or setting..."></textarea>
+          </label>
+
+          <label>
+            Hashtags
+            <input id="tags" type="text" placeholder="#wildlife #conservation #tracking" autocomplete="off" />
+          </label>
+
+          <section class="settings-card">
+            <h2>Privacy & Safety</h2>
+            <label class="switch-row">
+              <span>Approximate location</span>
+              <input id="approx-location" type="checkbox" checked />
+            </label>
+            <label class="switch-row">
+              <span>Delay post by 15 minutes</span>
+              <input id="delay-post" type="checkbox" checked />
+            </label>
+            <p id="location-note">Your exact GPS coordinates are never shared with public users.</p>
+          </section>
+          <p class="form-status" id="upload-status" role="status"></p>
+        </form>
+      </section>
+
+      <section class="screen" id="chat-screen" aria-labelledby="chat-title">
+        <header class="screen-header compact">
+          <div>
+            <p class="kicker">Transient chat</p>
+            <h1 id="chat-title">Nearby Rooms</h1>
+          </div>
+          <span class="live-dot">Live</span>
+        </header>
+        <section class="rooms-strip" aria-label="Nearby chat rooms">
+          <button class="room-card active" type="button" data-chat-room="near-me"><strong>Mason Park Sightings</strong><span>Near me · live</span></button>
+          <button class="room-card" type="button" data-chat-room="aldrich-park"><strong>Aldrich Park</strong><span>Park room · campus</span></button>
+          <button class="room-card" type="button" data-chat-room="post-thread"><strong>Post Thread</strong><span>Sighting comments</span></button>
+          <button class="room-card" type="button" data-chat-room="neighborhood-watch"><strong>Neighborhood Watch</strong><span>4 active · 0.8km</span></button>
+        </section>
+        <section class="transient-panel">
+          <strong id="chat-room-title">Transient Chat Active</strong>
+          <p id="chat-room-copy">Messages are ephemeral and cleared when you leave this geographical area.</p>
+        </section>
+        <div class="filter-row padded" id="chat-room-tabs">
+          <button class="pill active" type="button" data-chat-room="near-me">Near me</button>
+          <button class="pill" type="button" data-chat-room="aldrich-park">Aldrich Park</button>
+          <button class="pill" type="button" data-chat-room="post-thread">Post thread</button>
+        </div>
+        <div class="chat-list" id="chat-list"></div>
+        <form class="chat-composer" id="chat-form">
+          <input id="chat-input" type="text" placeholder="Message nearby..." autocomplete="off" />
+          <button class="send-button" aria-label="Send message">↑</button>
+        </form>
+      </section>
+
+      <section class="screen" id="profile-screen" aria-labelledby="profile-title">
+        <header class="profile-cover">
+          <div class="profile-toolbar">
+            <button class="settings-button" id="reset-data">Reset demo</button>
+            <button class="settings-button" id="logout-button">Log out</button>
+          </div>
+          <div class="profile-row">
+            <div class="avatar" id="profile-avatar">W</div>
+            <div class="profile-stats">
+              <div class="profile-stat"><strong id="profile-post-count">0</strong><span>Posts</span></div>
+              <div class="profile-stat"><strong id="profile-follower-count">0</strong><span>Followers</span></div>
+              <div class="profile-stat"><strong id="profile-following-count">0</strong><span>Following</span></div>
+            </div>
+          </div>
+          <h1 id="profile-title">Wildspotter</h1>
+          <p id="profile-bio">UCI wildlife spotter · Irvine, CA · Documenting campus wildlife safely</p>
+          <div class="profile-actions">
+            <button class="pill active" id="account-visibility">Public account</button>
+            <button class="pill" id="edit-profile-button">Edit profile</button>
+          </div>
+        </header>
+        <section class="recent-discoveries" aria-label="Recent discoveries">
+          <div class="section-heading">
+            <h2>Recent Discoveries</h2>
+            <button type="button">View All</button>
+          </div>
+          <div class="discovery-row">
+            <article>
+              <img src="https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=400&q=80" alt="Red fox" />
+              <span>Red Fox</span>
+            </article>
+            <article>
+              <img src="https://images.unsplash.com/photo-1543549790-8b5f4a028cfb?auto=format&fit=crop&w=400&q=80" alt="Owl" />
+              <span>Owl</span>
+            </article>
+            <article>
+              <img src="https://images.unsplash.com/photo-1484406566174-9da000fda645?auto=format&fit=crop&w=400&q=80" alt="Deer" />
+              <span>Deer</span>
+            </article>
+          </div>
+        </section>
+        <section class="safety-hub">
+          <h2>Safety & Privacy Hub</h2>
+          <p>Protecting you and the wildlife.</p>
+          <label class="switch-row">
+            <span>Incognito Mode</span>
+            <input type="checkbox" />
+          </label>
+          <label class="switch-row">
+            <span>Global Post Delay</span>
+            <input type="checkbox" checked />
+          </label>
+          <div>Location data for sensitive species is automatically blurred.</div>
+        </section>
+        <form class="profile-form" id="profile-form" hidden>
+          <label>
+            Display name
+            <input id="profile-name-input" type="text" maxlength="32" />
+          </label>
+          <label>
+            Bio
+            <textarea id="profile-bio-input" rows="3" maxlength="120"></textarea>
+          </label>
+          <label>
+            Account visibility
+            <select id="profile-visibility-input">
+              <option value="Public">Public</option>
+              <option value="Nearby only">Nearby only</option>
+              <option value="Private">Private</option>
+            </select>
+          </label>
+          <button class="primary-action" type="submit">Save profile</button>
+        </form>
+        <nav class="profile-tabs">
+          <button class="active">Grid</button>
+          <button>Map view</button>
+          <button>Saved</button>
+        </nav>
+        <div class="profile-grid" id="profile-grid"></div>
+      </section>
+
+      <nav class="bottom-nav" aria-label="Primary navigation">
+        <button class="nav-button active" data-screen="map-screen"><span>▥</span>Explore</button>
+        <button class="nav-button" data-screen="sightings-screen"><span>◉</span>Sightings</button>
+        <button class="camera-button" data-screen="upload-screen" aria-label="Create post">+</button>
+        <button class="nav-button" data-screen="chat-screen"><span>◌</span>Chat</button>
+        <button class="nav-button" data-screen="profile-screen"><span>●</span>Profile</button>
+      </nav>
+
+      <section class="auth-gate" id="auth-gate" aria-labelledby="auth-title">
+        <div class="login-brand-art" aria-label="Wildspot">
+          <span class="mountain-mark"></span>
+          <strong>WILDSPOT</strong>
+          <p>Empowering discovery,<br />ensuring protection.</p>
+        </div>
+        <div class="auth-card">
+          <p class="kicker">Wildspot account</p>
+          <h1 id="auth-title">Sign in to spot safely around UCI</h1>
+          <p class="auth-copy">Create an account to post sightings, chat nearby, save reports, and keep your privacy settings across sessions.</p>
+          <div class="auth-tabs">
+            <button class="active" data-auth-mode="signin">Sign in</button>
+            <button data-auth-mode="signup">Create account</button>
+          </div>
+          <form class="auth-form" id="auth-form" novalidate>
+            <label id="display-name-field" hidden>
+              Display name
+              <input id="auth-display-name" type="text" autocomplete="name" placeholder="UCI Wildspotter" />
+            </label>
+            <label>
+              Email
+              <input id="auth-email" type="email" autocomplete="email" placeholder="you@uci.edu" />
+            </label>
+            <label>
+              Password
+              <input id="auth-password" type="password" autocomplete="current-password" />
+            </label>
+            <button class="primary-action" id="auth-submit" type="submit">Sign in</button>
+            <p class="form-status visually-hidden" id="auth-status" role="status"></p>
+          </form>
+        </div>
+        <section class="privacy-commitment">
+          <strong>Privacy & Ethics Commitment</strong>
+          <p>WildSpot uses blurred location data for sensitive species. By logging in, you agree to our conservation-first tracking policy.</p>
+        </section>
+      </section>
+
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </main>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin=""
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="./src/config.js"></script>
+    <script src="./src/core.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

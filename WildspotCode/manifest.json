@@ -1,0 +1,17 @@
+{
+  "name": "Wildspot",
+  "short_name": "Wildspot",
+  "description": "Discover and share nearby UCI campus animal sightings with privacy-first location controls.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f6f1",
+  "theme_color": "#204c3a",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
