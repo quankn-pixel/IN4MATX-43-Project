@@ -65,9 +65,11 @@ Last updated: 2026-06-01 (commit: uncommitted local snapshot)
 | Member | Owns which test categories / components |
 | --- | --- |
 | Jianhao Zhang | Frontend app behavior, auth/profile flows, UCI map integration |
-| Teammate 2 | Test plan review, manual QA scripts, meeting log |
-| Teammate 3 | Future backend/API tests when backend is added |
-
+| Niki Chen Chen  | TEST_PLAN.md, risks, quality goals, scope |
+| Matthew Contreras | Generating coverage reports and organizing test documentation |
+| Dominic Diaz | UI - N/A |
+| Quan Nguyen | Backend / Database Integration |
+ 
 ## Part 2 - Tests Implemented + Report
 
 Last updated: 2026-06-01 (commit: uncommitted local snapshot)
@@ -96,7 +98,6 @@ Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storag
 ### 2.4 Where the tests live + how to run them
 
 ```text
-src/core.js
 tests/unit/core.test.js
 tests/integration/app-contract.test.js
 coverage/index.html
@@ -105,6 +106,7 @@ coverage/index.html
 Run commands:
 
 ```bash
+cd hw4
 npm test
 npm run coverage
 ```
@@ -148,11 +150,3 @@ The hardest parts to test were the browser and backend behaviors. Leaflet map re
 If we had more time, the next tests would be Playwright end-to-end tests. The highest-value flow would create or sign in to a demo account, upload a sighting with an image, confirm that the post appears on the UCI map and in the sightings list, open the post detail view, send a room-specific chat message, follow a tracker, and submit a report. That would test the experience the user actually sees, not just the static contracts.
 
 The AI assistant helped most with separating testable logic from UI code, drafting the test plan, and creating coverage/report artifacts quickly. It was less reliable for judging full product quality from code alone; visual layout, stale browser cache, Supabase rate limits, and real login behavior still required manual testing and human judgment.
-
-## Meeting Documentation
-
-| Date & time | Attendees | Summary |
-| --- | --- | --- |
-| 2026-05-29 | Jianhao Zhang, Codex | Reviewed assignment testing requirements, added Node test runner setup, created unit/integration tests, and drafted the test plan/report. |
-| 2026-05-29 | Jianhao Zhang, Codex | Connected Supabase Auth, database tables, Storage image uploads, and Realtime chat; updated tests and documentation snapshots. |
-| 2026-06-01 | Jianhao Zhang, Codex | Verified 17 automated tests, updated the test plan snapshot, and documented current Supabase chat-room/follow persistence gaps. |
