@@ -5,7 +5,7 @@ Wildspot is a mobile-first web app for discovering and sharing animal sightings 
 ## Run the app
 
 ```bash
-cd /Users/a20211213741/WildspotCode
+cd /Users/hw4(change to the directory of this file)
 python3 -m http.server 5174
 ```
 
