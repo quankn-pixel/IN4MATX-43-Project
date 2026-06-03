@@ -8,12 +8,22 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 
 | Scope | Why this matters |
 | --- | --- |
+| In scope: map filter by animal category (All, Birds, Mammals, Other) | Filter buttons and search bar are in index.html; filtering queries Supabase posts by category |
+| In scope: upload error states — oversized file (>25MB), missing media, failed publish | index.html enforces 25MB max; upload-status element shows feedback; silent failures would break user trust |
+| In scope: post detail screen loading | detail-screen and detail-card exist in index.html; broken post detail is immediately visible to users |
+| In scope: UCI-only email enforcement at signup | isUciEmail() in core.js enforces @uci.edu; a bug here lets non-UCI users in |
+| In scope: HTML escaping of user content | escapeHtml() in core.js; XSS risk if broken |
+| In scope: animal categorization logic | categorizeAnimal() in core.js drives map filter categories |
 | In scope: Supabase Auth signup, login, logout, profile editing | High user impact; blocks posting, chat, profile, and reports |
 | In scope: UCI campus map rendering and sighting pins | Core discovery workflow |
 | In scope: post creation, tags, privacy settings, local persistence | Main product workflow and privacy promise |
 | In scope: nearby chat and message persistence | Required social/nearby communication workflow |
 | In scope: report creation | Safety requirement |
 | Out of scope: real email delivery / verification | Supabase Auth is wired, but email confirmation is disabled/reduced for local demo speed |
+| Out of scope: saved posts / My Collections | Architected in HW2 but not implemented in prototype; no code to test |
+| Out of scope: iOS/Android device compatibility | Time constraint; tested on local browser only |
+| Out of scope: performance/load testing (e.g. 100 concurrent uploads) | Requires special tooling; documented |
+| Out of scope: Google/Apple OAuth login | Third-party auth; we test only the Supabase email boundary |
 | In scope: Supabase database, Storage, and Realtime wiring | Demonstrates actual backend persistence for posts, chat, reports, profiles, sighting media, and live nearby messages |
 | Out of scope: full cross-browser matrix | Time constraint; Chrome/local browser is the target for this snapshot |
 
@@ -26,6 +36,15 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 - Privacy-sensitive posts use approximate UCI campus positions rather than exact real-time tracking.
 - PWA assets referenced by the app are included in the service worker cache list.
 - Supabase Auth, database writes, Storage uploads, and Realtime chat have at least one manual verification path for demo.
+- - Backend returns correct status codes: 200/201 on success, 
+  400 on missing required fields, 404 on missing resource; 
+  no silent failure.
+- When approximate location is ON, stored coordinates are 
+  blurred to a UCI campus zone rather than exact GPS.
+- Applying an animal-type filter returns only matching posts; 
+  an empty result returns a 200 with posts:[] not an error.
+- Unauthenticated requests to protected endpoints return 401.
+- Upload rejects files over 25MB and shows a clear error message.
 
 ### 1.3 Risks and priorities
 
@@ -38,6 +57,12 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 | Media uploads | Browser file APIs and Storage policies can fail independently from post writes | M |
 | Realtime chat | Needs Supabase publication setup and browser subscription stability | M |
 | Service worker cache | Stale cache can hide new code during demos | M |
+| Map filter correctness | Wrong filter silently shows incorrect sightings; misleads users about wildlife locations | H |
+| Upload error handling | Silent failures (oversized file, failed Supabase write) leave app in broken state with no user feedback | M |
+| HTML injection via user content | escapeHtml() in core.js must run on all user-generated text; failure is an XSS vulnerability | M |
+| Network/backend failures | Users need clear error messages when map data or uploads fail; without this the app feels broken | M |
+| Data migration (migrateState) | Old demo posts with Mason Park locations must be remapped to UCI campus; failure breaks map rendering | M |
+| Profile/privacy settings | Incorrect privacy toggle behavior could confuse users; lower priority than map/upload | L |
 
 ### 1.4 Strategy: test types and approach
 
@@ -64,9 +89,11 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 
 | Member | Owns which test categories / components |
 | --- | --- |
-| Jianhao Zhang | Frontend app behavior, auth/profile flows, UCI map integration |
-| Teammate 2 | Test plan review, manual QA scripts, meeting log |
-| Teammate 3 | Future backend/API tests when backend is added |
+| Niki Chen Chen | TEST_PLAN.md, risks, quality goals, scope |
+| Matthew Contreras | Coverage reports and test documentation |
+| Dominic Diaz | UI prototype and Figma design verification |
+| Jianhao Zhang | Frontend app behavior, auth/profile flows, UCI map integration, unit and integration tests |
+| Quan Nguyen | Frontend tests, architecture documentation |
 
 ## Part 2 - Tests Implemented + Report
 
@@ -138,6 +165,7 @@ Committed HTML snapshot: `coverage/index.html`.
 | Browser interaction tests | Static integration contracts and unit service tests | Add Playwright once dependency installation is allowed |
 | Backend/API tests | Supabase schema contract tests plus manual Table Editor/Storage verification | Automated live Supabase tests would need managed test credentials and cleanup scripts |
 | Chat rooms persisted by room | Added `nearby_messages.room` schema support and app-side room routing for Near me, Aldrich Park, and Post thread | Existing old messages default to `near-me`; future work could add per-room retention cleanup |
+| Backend API tests (Post Service, Map Service, User Service) | Only frontend logic and Supabase schema contract tests shipped | Not enough resources for a separate backend layer this sprint; planned for next phase |
 
 ## Part 3 - Reflection
 
