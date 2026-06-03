@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wildspot Unit Test Report</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        background: #f5f8f6;
+        color: #183c32;
+        font-family: Arial, sans-serif;
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 28px;
+        border: 1px solid #d9e6e1;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 18px 40px rgba(7, 61, 48, 0.08);
+      }
+
+      h1,
+      h2 {
+        margin-top: 0;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 18px 0;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        border: 1px solid #d9e6e1;
+        vertical-align: top;
+        text-align: left;
+      }
+
+      th {
+        background: #e7f4ef;
+      }
+
+      code {
+        padding: 2px 5px;
+        border-radius: 5px;
+        background: #eef5f2;
+      }
+
+      .pass {
+        color: #087443;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Wildspot Unit Test Report</h1>
+      <p><strong>Last updated:</strong> 2026-06-02</p>
+      <p><strong>Source test file:</strong> <code>tests/unit/core.test.js</code></p>
+      <p><strong>Run command:</strong> <code>npm test</code></p>
+      <p><strong>Status:</strong> <span class="pass">7 unit tests passing</span></p>
+
+      <h2>Test Cases</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test name</th>
+            <th>Purpose</th>
+            <th>Expected result</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><code>normalizeTags adds missing hash prefixes and removes blanks</code></td>
+            <td>Verifies that user-entered tags are cleaned before a sighting is saved.</td>
+            <td>Tags such as <code>duck #uci aldrich</code> become <code>#duck</code>, <code>#uci</code>, and <code>#aldrich</code>.</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><code>escapeHtml prevents injected markup from being rendered</code></td>
+            <td>Checks that unsafe user text is escaped before display.</td>
+            <td>HTML characters are converted to safe entities.</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><code>fallbackPosition keeps campus markers within visible map bounds</code></td>
+            <td>Protects the map UI from placing generated markers outside the visible campus area.</td>
+            <td>Fallback marker coordinates remain within the allowed screen range.</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><code>categorizeAnimal maps common campus sightings to product categories</code></td>
+            <td>Checks the category logic used by filters and uploaded sightings.</td>
+            <td>Birds, mammals, and other animals map to the correct product category.</td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><code>isUciEmail accepts only UCI email addresses</code></td>
+            <td>Verifies the demo signup rule for UCI-only accounts.</td>
+            <td><code>student@uci.edu</code> passes and non-UCI addresses fail.</td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><code>createReport returns a moderator-ready report record</code></td>
+            <td>Checks the reporting system record shape.</td>
+            <td>A report includes id, post id, reason, timestamp, and open status.</td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><code>migrateState backfills lat/lng and moves old Mason Park data to UCI language</code></td>
+            <td>Protects local saved data migration after the app moved to the UCI campus map.</td>
+            <td>Old demo posts receive UCI-compatible location and marker data.</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

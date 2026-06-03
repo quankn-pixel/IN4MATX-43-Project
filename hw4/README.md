@@ -5,7 +5,7 @@ Wildspot is a mobile-first web app for discovering and sharing animal sightings 
 ## Run the app
 
 ```bash
-cd /Users/hw4(change to the directory of this file)
+cd hw4
 python3 -m http.server 5174
 ```
 
@@ -90,7 +90,7 @@ npm test
 Current snapshot:
 
 ```text
-12 passing, 0 failing
+17 passing, 0 failing
 ```
 
 Coverage:
@@ -115,6 +115,8 @@ tests/
   integration/
 docs/
   TEST_PLAN.md
+coverage/
+  index.html
 ```
 
 ## Known limits

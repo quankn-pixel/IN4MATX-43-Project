@@ -98,7 +98,9 @@ Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storag
 ```text
 src/core.js
 tests/unit/core.test.js
+tests/unit/index.html
 tests/integration/app-contract.test.js
+tests/integration/index.html
 coverage/index.html
 ```
 
