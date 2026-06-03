@@ -1,6 +1,7 @@
 # Wildspot Test Plan and Implementation Report
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+The readme file in the Hw4 is the instructions of launching the app.
+
 
 ## Part 1 - Test Plan (Strategic)
 
