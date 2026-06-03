@@ -1,6 +1,6 @@
 # Wildspot Test Plan and Implementation Report
 
-The readme file in the Hw4 is the instructions of launching the app.
+The README file in Hw4 contains instructions for launching the app.
 
 
 ## Part 1 - Test Plan (Strategic)
@@ -20,10 +20,10 @@ The readme file in the Hw4 is the instructions of launching the app.
 | In scope: post creation, tags, privacy settings, local persistence | Main product workflow and privacy promise |
 | In scope: nearby chat and message persistence | Required social/nearby communication workflow |
 | In scope: report creation | Safety requirement |
-| Out of scope: real email delivery / verification | Supabase Auth is wired, but email confirmation is disabled/reduced for local demo speed |
+| Out of scope: real email delivery/verification | Supabase Auth is wired, but email confirmation is disabled/reduced for local demo speed |
 | Out of scope: saved posts / My Collections | Architected in HW2 but not implemented in prototype; no code to test |
 | Out of scope: iOS/Android device compatibility | Time constraint; tested on local browser only |
-| Out of scope: performance/load testing (e.g. 100 concurrent uploads) | Requires special tooling; documented |
+| Out of scope: performance/load testing (e.g., 100 concurrent uploads) | Requires special tooling; documented |
 | Out of scope: Google/Apple OAuth login | Third-party auth; we test only the Supabase email boundary |
 | In scope: Supabase database, Storage, and Realtime wiring | Demonstrates actual backend persistence for posts, chat, reports, profiles, sighting media, and live nearby messages |
 | Out of scope: full cross-browser matrix | Time constraint; Chrome/local browser is the target for this snapshot |
@@ -37,19 +37,19 @@ The readme file in the Hw4 is the instructions of launching the app.
 - Privacy-sensitive posts use approximate UCI campus positions rather than exact real-time tracking.
 - PWA assets referenced by the app are included in the service worker cache list.
 - Supabase Auth, database writes, Storage uploads, and Realtime chat have at least one manual verification path for demo.
-- - Backend returns correct status codes: 200/201 on success, 
+- Backend returns correct status codes: 200/201 on success, 
   400 on missing required fields, 404 on missing resource; 
   no silent failure.
-- When approximate location is ON, stored coordinates are 
-  blurred to a UCI campus zone rather than exact GPS.
-- Applying an animal-type filter returns only matching posts; 
-  an empty result returns a 200 with posts:[] not an error.
+- When the approximate location is ON, stored coordinates are 
+  blurred to a UCI campus zone rather than the exact GPS.
+- Applying an animal-type filter returns only matching posts. 
+  An empty result returns a 200 with posts:[], not an error.
 - Unauthenticated requests to protected endpoints return 401.
 - Upload rejects files over 25MB and shows a clear error message.
 
 ### 1.3 Risks and priorities
 
-| Area | Why it's risky / costly | Priority |
+| Area | Why it's risky/costly | Priority |
 | --- | --- | --- |
 | Supabase Auth/session flow | If broken, users cannot post or chat; security implications later | H |
 | Location privacy | App promise depends on fuzzy campus pins | H |
@@ -61,8 +61,8 @@ The readme file in the Hw4 is the instructions of launching the app.
 | Map filter correctness | Wrong filter silently shows incorrect sightings; misleads users about wildlife locations | H |
 | Upload error handling | Silent failures (oversized file, failed Supabase write) leave app in broken state with no user feedback | M |
 | HTML injection via user content | escapeHtml() in core.js must run on all user-generated text; failure is an XSS vulnerability | M |
-| Network/backend failures | Users need clear error messages when map data or uploads fail; without this the app feels broken | M |
-| Data migration (migrateState) | Old demo posts with Mason Park locations must be remapped to UCI campus; failure breaks map rendering | M |
+| Network/backend failures | Users need clear error messages when map data or uploads fail; without this, the app feels broken | M |
+| Data migration (migrateState) | Old demo posts with Mason Park locations must be remapped to the UCI campus; failure breaks map rendering | M |
 | Profile/privacy settings | Incorrect privacy toggle behavior could confuse users; lower priority than map/upload | L |
 
 ### 1.4 Strategy: test types and approach
@@ -88,7 +88,7 @@ The readme file in the Hw4 is the instructions of launching the app.
 
 ### 1.6 Team roles
 
-| Member | Owns which test categories / components |
+| Member | Owns which test categories/components |
 | --- | --- |
 | Niki Chen Chen | TEST_PLAN.md, risks, quality goals, scope |
 | Matthew Contreras | Coverage reports and test documentation |
@@ -170,10 +170,10 @@ Committed HTML snapshot: `coverage/index.html`.
 
 ## Part 3 - Reflection
 
-The tests caught a design problem that was easy to miss while building the UI: too much important behavior originally lived directly inside `app.js`. That made the app work visually, but it made meaningful unit testing harder because rules like tag normalization, UCI email validation, report creation, location fallback, and data migration were mixed together with DOM rendering. Moving those rules into `src/core.js` made the behavior easier to test and also made the app safer to change. For example, the tests now protect against accidentally accepting non-UCI emails, rendering unsafe HTML, or placing old demo posts outside the UCI campus map area.
+The tests caught a design problem that was easy to miss while building the UI: too much important behavior originally lived directly inside `app.js`. That made the app work visually, but it made meaningful unit testing harder because rules like tag normalization, UCI email validation, report creation, location fallback, and data migration were mixed with DOM rendering. Moving those rules into `src/core.js` made the behavior easier to test and also made the app safer to change. For example, the tests now protect against accidentally accepting non-UCI emails, rendering unsafe HTML, or placing old demo posts outside the UCI campus map area.
 
 The hardest parts to test were the browser and backend behaviors. Leaflet map rendering depends on browser layout and external map tiles. Supabase Auth, Storage uploads, database writes, and Realtime chat depend on a live project, policies, test accounts, and network state. Because of that, our automated tests focus on deterministic logic and integration contracts: HTML script order, service worker cached files, manifest setup, Supabase schema requirements, follows, Storage bucket wiring, and Realtime subscription code. Actual Supabase writes are still manually verified through the Table Editor and Storage dashboard.
 
 If we had more time, the next tests would be Playwright end-to-end tests. The highest-value flow would create or sign in to a demo account, upload a sighting with an image, confirm that the post appears on the UCI map and in the sightings list, open the post detail view, send a room-specific chat message, follow a tracker, and submit a report. That would test the experience the user actually sees, not just the static contracts.
 
-The AI assistant helped most with separating testable logic from UI code, drafting the test plan, and creating coverage/report artifacts quickly. It was less reliable for judging full product quality from code alone; visual layout, stale browser cache, Supabase rate limits, and real login behavior still required manual testing and human judgment.
+The AI assistant helped most with separating testable logic from UI code, drafting the test plan, and quickly creating coverage/report artifacts. It was less reliable for judging full product quality from code alone; visual layout, stale browser cache, Supabase rate limits, and real login behavior still required manual testing and human judgment.
