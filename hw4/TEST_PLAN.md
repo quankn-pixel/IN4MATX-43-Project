@@ -65,8 +65,9 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 | Member | Owns which test categories / components |
 | --- | --- |
 | Jianhao Zhang | Frontend app behavior, auth/profile flows, UCI map integration |
-| Teammate 2 | Test plan review, manual QA scripts, meeting log |
-| Teammate 3 | Future backend/API tests when backend is added |
+| Matthew Contreras | Test plan review, manual QA scripts, meeting log |
+| Dominic Diaz, Niki Chen Chen | The user interface designer|
+|Quan Nguyen| The application design(database)
 
 ## Part 2 - Tests Implemented + Report
 
