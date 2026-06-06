@@ -113,8 +113,13 @@ test("upload and post management avoid the known demo regressions", () => {
   const schema = read("database/schema.sql");
   assert.ok(!html.includes("menu-mark"));
   assert.ok(html.includes("Upload →"));
+  assert.ok(html.includes('name="sighting-icon"'));
+  ["Dangerous", "Cute", "Funny", "Interaction"].forEach((label) => {
+    assert.ok(html.includes(label), `${label} icon option missing`);
+  });
   assert.ok(app.includes('const STORAGE_KEY = "wildspot-state-v3"'));
   assert.ok(app.includes("animalEmoji(title, category)"));
+  assert.ok(app.includes("selectedSightingIcon()"));
   assert.ok(app.includes("PrivacyService.uploadLatLng"));
   assert.ok(app.includes("deletePost(postId)"));
   assert.ok(schema.includes('"posts can be deleted by client"'));
@@ -123,7 +128,8 @@ test("upload and post management avoid the known demo regressions", () => {
 test("map and profile icons are derived from species instead of stale stored emoji", () => {
   const app = read("app.js");
   assert.ok(app.includes("function displayEmoji(post)"));
-  assert.ok(app.includes("emoji: animalEmoji(row.title, row.category)"));
+  assert.ok(app.includes("isChosenSightingIcon(row.emoji)"));
+  assert.ok(app.includes("sightingIconOptions"));
   assert.ok(app.includes("${displayEmoji(post)}</div>"));
   assert.ok(!app.includes("post.emoji ||"));
   assert.ok(!app.includes("row.emoji ||"));

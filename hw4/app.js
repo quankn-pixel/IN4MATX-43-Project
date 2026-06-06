@@ -99,6 +99,13 @@ const demoMediaById = {
   "hawk-1": "https://images.unsplash.com/photo-1543549790-8b5f4a028cfb?auto=format&fit=crop&w=900&q=80"
 };
 
+const sightingIconOptions = {
+  dangerous: "🐍",
+  cute: "🐰",
+  funny: "🐒",
+  interaction: "🤝"
+};
+
 let state = loadState();
 let authState = loadAuthState();
 let activeFilter = "all";
@@ -572,7 +579,7 @@ function toDbPost(post) {
     location: post.location,
     distance: post.distance,
     tags: post.tags,
-    emoji: animalEmoji(post.title, post.category),
+    emoji: isChosenSightingIcon(post.emoji) ? post.emoji : animalEmoji(post.title, post.category),
     visibility: post.visibility,
     delayed: Boolean(post.delayed),
     approximate: Boolean(post.approximate),
@@ -596,7 +603,7 @@ function fromDbPost(row) {
     createdAt: row.created_at,
     availableAt: row.created_at,
     tags: row.tags || [],
-    emoji: animalEmoji(row.title, row.category),
+    emoji: isChosenSightingIcon(row.emoji) ? row.emoji : animalEmoji(row.title, row.category),
     visibility: row.visibility,
     delayed: row.delayed,
     approximate: row.approximate,
@@ -781,7 +788,7 @@ function migrateState(nextState) {
     ...post,
     media: post.media || demoMediaById[post.id] || "",
     availableAt: post.availableAt || post.createdAt || Date.now(),
-    emoji: animalEmoji(post.title, post.category)
+    emoji: isChosenSightingIcon(post.emoji) ? post.emoji : animalEmoji(post.title, post.category)
   }));
   return migrated;
 }
@@ -873,7 +880,16 @@ function animalEmoji(title, category) {
   return "🐾";
 }
 
+function isChosenSightingIcon(emoji) {
+  return Object.values(sightingIconOptions).includes(emoji);
+}
+
+function selectedSightingIcon() {
+  return document.querySelector('input[name="sighting-icon"]:checked')?.value || sightingIconOptions.cute;
+}
+
 function displayEmoji(post) {
+  if (isChosenSightingIcon(post.emoji)) return post.emoji;
   return animalEmoji(post.title || "", post.category || "") || "🐾";
 }
 
@@ -1326,7 +1342,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
     createdAt,
     availableAt,
     tags,
-    emoji: animalEmoji(title, category),
+    emoji: selectedSightingIcon(),
     visibility,
     delayed,
     approximate,
@@ -1349,6 +1365,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   mediaPicker.classList.remove("has-media");
   document.querySelector("#approx-location").checked = true;
   document.querySelector("#delay-post").checked = true;
+  document.querySelector('input[name="sighting-icon"][value="🐰"]').checked = true;
   status.textContent = "";
   renderAll();
   if (delayed) {
