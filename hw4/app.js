@@ -150,6 +150,7 @@ const mediaControls = document.querySelector("#media-controls");
 const mediaFit = document.querySelector("#media-fit");
 const mediaPositionX = document.querySelector("#media-position-x");
 const mediaPositionY = document.querySelector("#media-position-y");
+const uploadPlaceInput = document.querySelector("#upload-place");
 const appShell = document.querySelector(".app-shell");
 const authGate = document.querySelector("#auth-gate");
 const authForm = document.querySelector("#auth-form");
@@ -575,9 +576,9 @@ const PrivacyService = {
     const jitter = () => (Math.random() - 0.5) * 0.0026;
     return [latlng[0] + jitter(), latlng[1] + jitter()];
   },
-  uploadLatLng(approximate = true) {
-    const aldrichPark = campusPlaces.find((place) => place.name === "Aldrich Park") || campusPlaces[0];
-    return approximate ? this.fuzzyLatLng(aldrichPark.latlng) : aldrichPark.latlng;
+  uploadLatLng(placeName, approximate = true) {
+    const place = campusPlaces.find((item) => item.name === placeName) || campusPlaces[0];
+    return approximate ? this.fuzzyLatLng(place.latlng) : place.latlng;
   }
 };
 
@@ -917,6 +918,10 @@ function isChosenSightingIcon(emoji) {
 
 function selectedSightingIcon() {
   return document.querySelector('input[name="sighting-icon"]:checked')?.value || sightingIconOptions.cute;
+}
+
+function selectedUploadPlace() {
+  return campusPlaces.find((place) => place.name === uploadPlaceInput?.value) || campusPlaces[0];
 }
 
 function displayEmoji(post) {
@@ -1445,6 +1450,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
 
   const title = categoryValue[0].toUpperCase() + categoryValue.slice(1);
   const category = categorizeAnimal(title);
+  const uploadPlace = selectedUploadPlace();
   const postId = `post-${Date.now()}`;
   const delayed = document.querySelector("#delay-post").checked;
   const approximate = document.querySelector("#approx-location").checked;
@@ -1468,7 +1474,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
     title,
     category,
     caption,
-    location: approximate ? "Aldrich Park fuzzy area" : "Aldrich Park",
+    location: approximate ? `${uploadPlace.name} fuzzy area` : uploadPlace.name,
     distance: "0.1 mi",
     createdAt,
     availableAt,
@@ -1480,7 +1486,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
     media: storedMediaUrl,
     mediaFit: mediaFit?.value || "cover",
     mediaPosition: `${mediaPositionX?.value || 50}% ${mediaPositionY?.value || 50}%`,
-    latlng: PrivacyService.uploadLatLng(approximate),
+    latlng: PrivacyService.uploadLatLng(uploadPlace.name, approximate),
     userId: user.id,
     author: user.displayName
   };
@@ -1503,6 +1509,7 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   if (mediaPositionY) mediaPositionY.value = 50;
   document.querySelector("#approx-location").checked = true;
   document.querySelector("#delay-post").checked = true;
+  if (uploadPlaceInput) uploadPlaceInput.value = "Aldrich Park";
   document.querySelector('input[name="sighting-icon"][value="🐰"]').checked = true;
   status.textContent = "";
   renderAll();

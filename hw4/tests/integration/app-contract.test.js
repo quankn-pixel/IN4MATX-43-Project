@@ -116,14 +116,19 @@ test("upload and post management avoid the known demo regressions", () => {
   assert.ok(html.includes('name="sighting-icon"'));
   assert.ok(html.includes('id="media-controls"'));
   assert.ok(html.includes('id="media-fit"'));
+  assert.ok(html.includes('id="upload-place"'));
   ["Dangerous", "Cute", "Funny", "Interaction"].forEach((label) => {
     assert.ok(html.includes(label), `${label} icon option missing`);
+  });
+  ["Aldrich Park", "Science Library", "Student Center"].forEach((place) => {
+    assert.ok(html.includes(place), `${place} upload location option missing`);
   });
   assert.ok(app.includes('const STORAGE_KEY = "wildspot-state-v3"'));
   assert.ok(app.includes("animalEmoji(title, category)"));
   assert.ok(app.includes("selectedSightingIcon()"));
+  assert.ok(app.includes("selectedUploadPlace()"));
   assert.ok(app.includes("mediaFit: mediaFit?.value"));
-  assert.ok(app.includes("PrivacyService.uploadLatLng"));
+  assert.ok(app.includes("PrivacyService.uploadLatLng(uploadPlace.name, approximate)"));
   assert.ok(app.includes("deletePost(postId)"));
   assert.ok(schema.includes('"posts can be deleted by client"'));
 });

@@ -1022,6 +1022,10 @@ h2 {
   gap: 12px;
 }
 
+.location-field {
+  grid-column: 1 / -1;
+}
+
 .species-chips {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
