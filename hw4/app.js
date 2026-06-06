@@ -572,7 +572,7 @@ function toDbPost(post) {
     location: post.location,
     distance: post.distance,
     tags: post.tags,
-    emoji: post.emoji || "🐾",
+    emoji: animalEmoji(post.title, post.category),
     visibility: post.visibility,
     delayed: Boolean(post.delayed),
     approximate: Boolean(post.approximate),
@@ -596,7 +596,7 @@ function fromDbPost(row) {
     createdAt: row.created_at,
     availableAt: row.created_at,
     tags: row.tags || [],
-    emoji: row.emoji || "🐾",
+    emoji: animalEmoji(row.title, row.category),
     visibility: row.visibility,
     delayed: row.delayed,
     approximate: row.approximate,
@@ -677,7 +677,7 @@ const MapService = {
     if (!this.map) {
       pinLayer.innerHTML = posts.map((post) => `
         <button class="map-pin" style="left:${fallbackPosition(post).x}%; top:${fallbackPosition(post).y}%;" data-post="${post.id}" aria-label="Open ${escapeHtml(post.title)}">
-          <span class="pin-dot">${post.emoji || "🐾"}</span>
+          <span class="pin-dot">${displayEmoji(post)}</span>
           <span class="pin-label">${escapeHtml(post.title)}</span>
         </button>
       `).join("");
@@ -692,7 +692,7 @@ const MapService = {
     });
 
     posts.forEach((post) => {
-      const markerHtml = `<div class="uci-marker ${post.id === selectedPostId ? "selected" : ""}">${post.emoji || "🐾"}</div>`;
+      const markerHtml = `<div class="uci-marker ${post.id === selectedPostId ? "selected" : ""}">${displayEmoji(post)}</div>`;
       const icon = L.divIcon({ html: markerHtml, className: "", iconSize: [46, 46], iconAnchor: [23, 23] });
       const popup = `
         <div class="uci-popup">
@@ -781,7 +781,7 @@ function migrateState(nextState) {
     ...post,
     media: post.media || demoMediaById[post.id] || "",
     availableAt: post.availableAt || post.createdAt || Date.now(),
-    emoji: post.emoji || animalEmoji(post.title, post.category)
+    emoji: animalEmoji(post.title, post.category)
   }));
   return migrated;
 }
@@ -873,6 +873,10 @@ function animalEmoji(title, category) {
   return "🐾";
 }
 
+function displayEmoji(post) {
+  return animalEmoji(post.title || "", post.category || "") || "🐾";
+}
+
 function isPostSaved(postId) {
   return (state.savedPostIds || []).includes(postId);
 }
@@ -901,7 +905,7 @@ function mediaMarkup(post, className) {
   if (post.media) {
     return `<div class="${className}"><img src="${post.media}" alt="${escapeHtml(post.title)}" /></div>`;
   }
-  return `<div class="${className}" aria-hidden="true">${post.emoji || "🐾"}</div>`;
+  return `<div class="${className}" aria-hidden="true">${displayEmoji(post)}</div>`;
 }
 
 function authorKeyForPost(post) {
@@ -1066,7 +1070,7 @@ function renderProfile() {
     .map((post) => {
       const pending = !isPostAvailable(post) ? `<span class="pending-badge">Pending</span>` : "";
       if (post.media) return `<button class="profile-tile" data-post="${post.id}">${pending}<img src="${post.media}" alt="${escapeHtml(post.title)}" /></button>`;
-      return `<button class="profile-tile" data-post="${post.id}">${pending}${post.emoji || "🐾"}</button>`;
+      return `<button class="profile-tile" data-post="${post.id}">${pending}${displayEmoji(post)}</button>`;
     })
     .join("");
 }

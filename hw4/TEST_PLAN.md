@@ -107,7 +107,7 @@ Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 | Unit tests | Required | >= 5 tests |
 | Integration tests | Required | >= 3 tests |
 
-Status: implemented 7 unit tests and 12 integration tests.
+Status: implemented 7 unit tests and 13 integration tests.
 
 ### 2.3 Tests by category
 
@@ -116,9 +116,9 @@ Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 | Category | Count | 2+ examples |
 | --- | ---: | --- |
 | Unit | 7 | `normalizeTags adds missing hash prefixes`; `isUciEmail accepts only UCI email addresses`; `createReport returns a moderator-ready report record` |
-| Integration | 12 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring` |
+| Integration | 13 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring`; `map and profile icons are derived from species instead of stale stored emoji` |
 
-Latest result: 19 passing, 0 failing, duration ~83 ms.
+Latest result: 20 passing, 0 failing, duration ~88 ms.
 Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-05.
 
 ### 2.4 Where the tests live + how to run them

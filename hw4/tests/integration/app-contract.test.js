@@ -119,3 +119,12 @@ test("upload and post management avoid the known demo regressions", () => {
   assert.ok(app.includes("deletePost(postId)"));
   assert.ok(schema.includes('"posts can be deleted by client"'));
 });
+
+test("map and profile icons are derived from species instead of stale stored emoji", () => {
+  const app = read("app.js");
+  assert.ok(app.includes("function displayEmoji(post)"));
+  assert.ok(app.includes("emoji: animalEmoji(row.title, row.category)"));
+  assert.ok(app.includes("${displayEmoji(post)}</div>"));
+  assert.ok(!app.includes("post.emoji ||"));
+  assert.ok(!app.includes("row.emoji ||"));
+});

@@ -90,7 +90,7 @@ npm test
 Current snapshot:
 
 ```text
-19 passing, 0 failing
+20 passing, 0 failing
 ```
 
 Coverage:
