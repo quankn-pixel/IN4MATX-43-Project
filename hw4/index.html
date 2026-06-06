@@ -20,7 +20,6 @@
       <section class="screen active" id="map-screen" aria-labelledby="map-title">
         <header class="screen-header floating">
           <div class="brand-lockup">
-            <span class="menu-mark">≡</span>
             <p class="brand-wordmark" id="map-title">WILDSPOT</p>
           </div>
           <button class="round-button" id="privacy-toggle" aria-label="Toggle location privacy">♧</button>
@@ -76,7 +75,6 @@
       <section class="screen" id="sightings-screen" aria-labelledby="sightings-title">
         <header class="screen-header compact">
           <div class="brand-lockup">
-            <span class="menu-mark">≡</span>
             <div>
               <p class="kicker">All logged animals</p>
               <h1 id="sightings-title">Sightings</h1>
@@ -95,7 +93,7 @@
         <header class="screen-header compact">
           <button class="text-button" id="cancel-upload">Cancel</button>
           <h1 id="upload-title">Log New Sighting</h1>
-          <button class="text-button strong" type="submit" form="upload-form">Share →</button>
+          <button class="text-button strong" type="submit" form="upload-form">Upload →</button>
         </header>
 
         <form class="upload-form" id="upload-form">
@@ -164,7 +162,7 @@
           <span class="live-dot">Live</span>
         </header>
         <section class="rooms-strip" aria-label="Nearby chat rooms">
-          <button class="room-card active" type="button" data-chat-room="near-me"><strong>Mason Park Sightings</strong><span>Near me · live</span></button>
+          <button class="room-card active" type="button" data-chat-room="near-me"><strong>UCI Campus Sightings</strong><span>Near me · live</span></button>
           <button class="room-card" type="button" data-chat-room="aldrich-park"><strong>Aldrich Park</strong><span>Park room · campus</span></button>
           <button class="room-card" type="button" data-chat-room="post-thread"><strong>Post Thread</strong><span>Sighting comments</span></button>
           <button class="room-card" type="button" data-chat-room="neighborhood-watch"><strong>Neighborhood Watch</strong><span>4 active · 0.8km</span></button>
@@ -202,8 +200,8 @@
           <h1 id="profile-title">Wildspotter</h1>
           <p id="profile-bio">UCI wildlife spotter · Irvine, CA · Documenting campus wildlife safely</p>
           <div class="profile-actions">
-            <button class="pill active" id="account-visibility">Public account</button>
-            <button class="pill" id="edit-profile-button">Edit profile</button>
+            <button class="pill active" type="button" id="account-visibility">Public account</button>
+            <button class="pill" type="button" id="edit-profile-button">Edit profile</button>
           </div>
         </header>
         <section class="recent-discoveries" aria-label="Recent discoveries">
@@ -259,9 +257,9 @@
           <button class="primary-action" type="submit">Save profile</button>
         </form>
         <nav class="profile-tabs">
-          <button class="active">Grid</button>
-          <button>Map view</button>
-          <button>Saved</button>
+          <button class="active" type="button" data-profile-tab="grid">Grid</button>
+          <button type="button" data-profile-tab="map">Map view</button>
+          <button type="button" data-profile-tab="saved">Saved</button>
         </nav>
         <div class="profile-grid" id="profile-grid"></div>
       </section>

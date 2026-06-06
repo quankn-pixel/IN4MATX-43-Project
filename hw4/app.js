@@ -1,4 +1,4 @@
-const STORAGE_KEY = "wildspot-state-v2";
+const STORAGE_KEY = "wildspot-state-v3";
 const AUTH_KEY = "wildspot-auth-v1";
 const {
   UCI_CENTER,
@@ -15,6 +15,7 @@ const {
 
 const seedState = {
   locationPrivacy: true,
+  savedPostIds: [],
   reports: [],
   posts: [
     {
@@ -37,8 +38,8 @@ const seedState = {
       id: "squirrel-1",
       title: "Red Fox",
       category: "Mammal",
-      caption: "Spotted this healthy adult Red Fox patrolling the edge of the property just after dusk. Exact location is protected.",
-      location: "Backyard Woods",
+      caption: "Spotted this healthy adult Red Fox near a quiet campus edge just after dusk. Exact location is protected.",
+      location: "UCI Ecological Preserve edge",
       distance: "0.3 mi",
       createdAt: Date.now() - 1000 * 60 * 16,
       tags: ["#wildlife", "#redfox", "#virginianature"],
@@ -54,7 +55,7 @@ const seedState = {
       title: "Blue Jay",
       category: "Bird",
       caption: "This Blue Jay appeared comfortable around nearby visitors. The location is approximate for safety.",
-      location: "St. James Park",
+      location: "Science Library trees",
       distance: "0.4 mi",
       createdAt: Date.now() - 1000 * 60 * 48,
       tags: ["#wildlife", "#birds", "#protected"],
@@ -83,7 +84,7 @@ const seedState = {
     }
   ],
   messages: [
-    { id: "m1", text: "Anyone else see the rabbit near Science Library?", author: "nearby_user", mine: false, room: "near-me", createdAt: Date.now() - 1000 * 60 * 8 },
+    { id: "m1", text: "Anyone else see the Blue Jay near Science Library?", author: "nearby_user", mine: false, room: "near-me", createdAt: Date.now() - 1000 * 60 * 8 },
     { id: "m2", text: "Yes, I just posted a fuzzy pin for it.", author: "You", mine: true, room: "near-me", createdAt: Date.now() - 1000 * 60 * 5 },
     { id: "m3", text: "Nice. Was it close to Ring Road?", author: "nearby_user", mine: false, room: "near-me", createdAt: Date.now() - 1000 * 60 * 2 },
     { id: "m4", text: "Aldrich Park trail is quiet right now.", author: "ParkWatcher", mine: false, room: "aldrich-park", createdAt: Date.now() - 1000 * 60 * 4 },
@@ -106,6 +107,7 @@ let selectedMediaFile = null;
 let selectedPostId = state.posts[0]?.id;
 let authMode = "signin";
 let activeChatRoom = "near-me";
+let activeProfileTab = "grid";
 let toastTimer;
 
 const screens = document.querySelectorAll(".screen");
@@ -130,6 +132,7 @@ const sightingsList = document.querySelector("#sightings-list");
 const sightingsTotal = document.querySelector("#sightings-total");
 const profileGrid = document.querySelector("#profile-grid");
 const profilePostCount = document.querySelector("#profile-post-count");
+const profileFollowerCount = document.querySelector("#profile-follower-count");
 const profileFollowingCount = document.querySelector("#profile-following-count");
 const toast = document.querySelector("#toast");
 const mediaInput = document.querySelector("#media-input");
@@ -155,7 +158,7 @@ const statusItems = document.querySelectorAll(".status-item");
 
 const chatRooms = {
   "near-me": {
-    title: "Transient Chat Active",
+    title: "UCI Nearby Chat Active",
     heading: "Nearby Rooms",
     copy: "Messages are ephemeral and cleared when you leave this geographical area.",
     empty: "No nearby messages yet. Start the local conversation.",
@@ -257,6 +260,12 @@ const DatabaseService = {
       if (!profileResult.ok) return profileResult;
     }
     const { error } = await this.client.from("posts").upsert(toDbPost(post));
+    if (error) return { ok: false, message: error.message };
+    return { ok: true };
+  },
+  async deletePost(postId) {
+    if (!this.ready) return { ok: false, message: "Database is not configured. Deleted locally only." };
+    const { error } = await this.client.from("posts").delete().eq("id", postId);
     if (error) return { ok: false, message: error.message };
     return { ok: true };
   },
@@ -537,9 +546,9 @@ const PrivacyService = {
     const jitter = () => (Math.random() - 0.5) * 0.0026;
     return [latlng[0] + jitter(), latlng[1] + jitter()];
   },
-  campusRandomLatLng() {
-    const place = campusPlaces[Math.floor(Math.random() * campusPlaces.length)];
-    return this.fuzzyLatLng(place.latlng);
+  uploadLatLng(approximate = true) {
+    const aldrichPark = campusPlaces.find((place) => place.name === "Aldrich Park") || campusPlaces[0];
+    return approximate ? this.fuzzyLatLng(aldrichPark.latlng) : aldrichPark.latlng;
   }
 };
 
@@ -585,6 +594,7 @@ function fromDbPost(row) {
     location: row.location,
     distance: row.distance,
     createdAt: row.created_at,
+    availableAt: row.created_at,
     tags: row.tags || [],
     emoji: row.emoji || "🐾",
     visibility: row.visibility,
@@ -624,6 +634,7 @@ const MapService = {
   map: null,
   markers: new Map(),
   privacyCircle: null,
+  userLocationCircle: null,
   init() {
     if (!window.L) {
       pinLayer.style.display = "block";
@@ -633,8 +644,9 @@ const MapService = {
 
     this.map = L.map("uci-map", {
       zoomControl: false,
-      maxBounds: UCI_BOUNDS,
-      maxBoundsViscosity: 0.75
+      minZoom: 13,
+      maxZoom: 19,
+      worldCopyJump: false
     }).setView(UCI_CENTER, 16);
 
     L.control.zoom({ position: "bottomleft" }).addTo(this.map);
@@ -704,7 +716,7 @@ const MapService = {
   },
   focus(post) {
     if (!this.map || !post?.latlng) return;
-    this.map.flyTo(post.latlng, 17, { duration: 0.45 });
+    this.map.flyTo(post.latlng, Math.max(this.map.getZoom(), 16), { duration: 0.35 });
   },
   locate() {
     if (!navigator.geolocation) {
@@ -717,9 +729,13 @@ const MapService = {
         const latlng = [position.coords.latitude, position.coords.longitude];
         if (this.map) {
           this.map.flyTo(latlng, 16);
-          L.circle(latlng, { radius: 140, color: "#d8894b", fillOpacity: 0.12 }).addTo(this.map);
+          if (this.userLocationCircle) {
+            this.userLocationCircle.setLatLng(latlng);
+          } else {
+            this.userLocationCircle = L.circle(latlng, { radius: 140, color: "#d8894b", fillOpacity: 0.12 }).addTo(this.map);
+          }
         }
-        showToast("Location found. Showing a privacy-safe radius.");
+        showToast("Location found. UCI map remains available for campus sightings.");
       },
       () => showToast("Location permission denied")
     );
@@ -758,9 +774,14 @@ function requireAuth(actionName = "continue") {
 
 function migrateState(nextState) {
   const migrated = migrateCoreState(nextState) || structuredClone(seedState);
+  migrated.savedPostIds ||= [];
+  migrated.messages ||= [];
+  migrated.reports ||= [];
   migrated.posts = migrated.posts.map((post) => ({
     ...post,
-    media: post.media || demoMediaById[post.id] || ""
+    media: post.media || demoMediaById[post.id] || "",
+    availableAt: post.availableAt || post.createdAt || Date.now(),
+    emoji: post.emoji || animalEmoji(post.title, post.category)
   }));
   return migrated;
 }
@@ -830,10 +851,46 @@ function timeAgo(timestamp) {
   return `${Math.round(hours / 24)}d ago`;
 }
 
+function isPostAvailable(post) {
+  return !post.availableAt || post.availableAt <= Date.now();
+}
+
+function animalEmoji(title, category) {
+  const text = `${title} ${category}`.toLowerCase();
+  if (/duck|mallard/.test(text)) return "🦆";
+  if (/owl/.test(text)) return "🦉";
+  if (/hawk|eagle/.test(text)) return "🦅";
+  if (/jay|bird|heron/.test(text)) return "🐦";
+  if (/fox/.test(text)) return "🦊";
+  if (/deer/.test(text)) return "🦌";
+  if (/rabbit/.test(text)) return "🐇";
+  if (/dog/.test(text)) return "🐕";
+  if (/cat/.test(text)) return "🐈";
+  if (/squirrel/.test(text)) return "🐿️";
+  if (/lizard|gecko/.test(text)) return "🦎";
+  if (category === "Bird") return "🐦";
+  if (category === "Mammal") return "🐾";
+  return "🐾";
+}
+
+function isPostSaved(postId) {
+  return (state.savedPostIds || []).includes(postId);
+}
+
+function toggleSavedPost(postId) {
+  state.savedPostIds ||= [];
+  if (isPostSaved(postId)) {
+    state.savedPostIds = state.savedPostIds.filter((id) => id !== postId);
+    return false;
+  }
+  state.savedPostIds.push(postId);
+  return true;
+}
+
 function postMatches(post) {
   const query = searchInput.value.trim().toLowerCase();
   const text = [post.title, post.category, post.caption, post.location, post.visibility, ...post.tags].join(" ").toLowerCase();
-  return (activeFilter === "all" || post.category === activeFilter) && (!query || text.includes(query));
+  return isPostAvailable(post) && (activeFilter === "all" || post.category === activeFilter) && (!query || text.includes(query));
 }
 
 function filteredPosts() {
@@ -913,6 +970,7 @@ function openPost(id) {
   const authorKey = authorKeyForPost(post);
   const following = AuthService.isFollowing(authorKey);
   const ownPost = isOwnPost(post);
+  const saved = isPostSaved(post.id);
   detailCard.innerHTML = `
     ${mediaMarkup(post, "detail-media")}
     <section class="detail-author">
@@ -930,31 +988,19 @@ function openPost(id) {
       <p>${escapeHtml(post.caption)}</p>
       <div class="privacy-note">Protection active: ${post.approximate ? "location blurred" : "location sharing is off"} · ${post.delayed ? "posted with delay" : "posted now"} · ${escapeHtml(post.visibility)}</div>
       <div class="detail-actions">
-        <button id="like-post">Track</button>
+        <button id="like-post">${saved ? "Saved" : "Save"}</button>
         <button id="detail-chat">Chat</button>
         <button id="detail-report">Report</button>
+        ${ownPost ? `<button class="danger-action" id="delete-post">Delete</button>` : ""}
       </div>
     </div>
     <section class="community-block">
-      <h2>Community (${Math.max(17, state.messages.length + 14)})</h2>
+      <h2>Community</h2>
       <div class="comment-box">
         <div class="comment-avatar">${escapeHtml(initial)}</div>
         <textarea placeholder="Add a respectful comment..."></textarea>
       </div>
-      <article class="comment">
-        <div class="comment-avatar">B</div>
-        <div>
-          <strong>BirdTrail_22 <span class="detail-meta">30m ago</span></strong>
-          <p>Pretty rare to spot this species this close to the walking trail. Thanks for keeping the location blurred.</p>
-        </div>
-      </article>
-      <article class="comment">
-        <div class="comment-avatar">N</div>
-        <div>
-          <strong>NatureLens_CA <span class="detail-meta">45m ago</span></strong>
-          <p>The safety note makes this easier to share responsibly.</p>
-        </div>
-      </article>
+      <p class="empty-chat">No comments yet.</p>
     </section>
   `;
   MapService.focus(post);
@@ -964,7 +1010,9 @@ function openPost(id) {
 
 function renderProfile() {
   const user = AuthService.currentUser();
+  const availablePosts = state.posts.filter(isPostAvailable);
   const userPosts = user ? state.posts.filter((post) => !post.userId || post.userId === user.id) : state.posts;
+  const savedPosts = availablePosts.filter((post) => isPostSaved(post.id));
   if (user) {
     profileAvatar.textContent = user.displayName.slice(0, 1).toUpperCase();
     profileTitle.textContent = user.displayName;
@@ -975,13 +1023,50 @@ function renderProfile() {
     profileVisibilityInput.value = user.visibility;
   }
   profilePostCount.textContent = userPosts.length;
+  if (profileFollowerCount) profileFollowerCount.textContent = 0;
   if (profileFollowingCount) profileFollowingCount.textContent = user?.following?.length || 0;
+  document.querySelectorAll("[data-profile-tab]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.profileTab === activeProfileTab);
+  });
+
+  if (activeProfileTab === "map") {
+    profileGrid.className = "profile-map-list";
+    profileGrid.innerHTML = availablePosts.map((post) => `
+      <button class="sighting-row" data-post="${post.id}">
+        ${mediaMarkup(post, "sighting-thumb")}
+        <span>
+          <strong>${escapeHtml(post.title)}</strong>
+          <p>${escapeHtml(post.location)} · ${escapeHtml(post.distance)} away</p>
+          <small>Approximate UCI area: ${escapeHtml(post.approximate ? "blurred" : "exact sharing off")}</small>
+        </span>
+      </button>
+    `).join("") || `<p class="form-status">No map-visible sightings yet.</p>`;
+    return;
+  }
+
+  if (activeProfileTab === "saved") {
+    profileGrid.className = "profile-map-list";
+    profileGrid.innerHTML = savedPosts.map((post) => `
+      <button class="sighting-row" data-post="${post.id}">
+        ${mediaMarkup(post, "sighting-thumb")}
+        <span>
+          <strong>${escapeHtml(post.title)}</strong>
+          <p>${escapeHtml(post.location)} · saved</p>
+          <small>${escapeHtml(post.caption)}</small>
+        </span>
+      </button>
+    `).join("") || `<p class="form-status">No saved sightings yet. Tap Save on a post detail.</p>`;
+    return;
+  }
+
+  profileGrid.className = "profile-grid";
   profileGrid.innerHTML = userPosts
     .slice()
     .sort((a, b) => b.createdAt - a.createdAt)
     .map((post) => {
-      if (post.media) return `<button class="profile-tile" data-post="${post.id}"><img src="${post.media}" alt="${escapeHtml(post.title)}" /></button>`;
-      return `<button class="profile-tile" data-post="${post.id}">${post.emoji || "🐾"}</button>`;
+      const pending = !isPostAvailable(post) ? `<span class="pending-badge">Pending</span>` : "";
+      if (post.media) return `<button class="profile-tile" data-post="${post.id}">${pending}<img src="${post.media}" alt="${escapeHtml(post.title)}" /></button>`;
+      return `<button class="profile-tile" data-post="${post.id}">${pending}${post.emoji || "🐾"}</button>`;
     })
     .join("");
 }
@@ -1090,8 +1175,28 @@ document.addEventListener("click", async (event) => {
   }
 
   if (event.target.id === "like-post") {
-    if (!requireAuth("track sightings")) return;
-    showToast("Added to your watch list");
+    if (!requireAuth("save sightings")) return;
+    const saved = toggleSavedPost(selectedPostId);
+    StorageService.save();
+    openPost(selectedPostId);
+    renderProfile();
+    showToast(saved ? "Sighting saved" : "Sighting removed from saved");
+  }
+
+  if (event.target.id === "delete-post") {
+    const post = state.posts.find((item) => item.id === selectedPostId);
+    if (!post || !isOwnPost(post)) {
+      showToast("You can only delete your own posts");
+      return;
+    }
+    state.posts = state.posts.filter((item) => item.id !== selectedPostId);
+    state.savedPostIds = (state.savedPostIds || []).filter((id) => id !== selectedPostId);
+    selectedPostId = state.posts[0]?.id;
+    StorageService.save();
+    const result = await DatabaseService.deletePost(post.id);
+    renderAll();
+    showScreen("sightings-screen");
+    showToast(result.ok || !DatabaseService.ready ? "Post deleted" : `Delete sync failed: ${result.message}`);
   }
 
   if (event.target.id === "follow-author") {
@@ -1124,6 +1229,13 @@ document.addEventListener("click", (event) => {
   setActiveChatRoom(roomButton.dataset.chatRoom);
 });
 
+document.addEventListener("click", (event) => {
+  const tabButton = event.target.closest("[data-profile-tab]");
+  if (!tabButton) return;
+  activeProfileTab = tabButton.dataset.profileTab;
+  renderProfile();
+});
+
 filterRow.addEventListener("click", (event) => {
   const button = event.target.closest("[data-filter]");
   if (!button) return;
@@ -1133,6 +1245,12 @@ filterRow.addEventListener("click", (event) => {
 });
 
 searchInput.addEventListener("input", renderMap);
+
+document.querySelector(".species-chips")?.addEventListener("click", (event) => {
+  const chip = event.target.closest("button");
+  if (!chip) return;
+  document.querySelector("#category").value = chip.textContent.trim();
+});
 
 document.querySelector("#privacy-toggle").addEventListener("click", () => {
   state.locationPrivacy = !state.locationPrivacy;
@@ -1177,6 +1295,10 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   const title = categoryValue[0].toUpperCase() + categoryValue.slice(1);
   const category = categorizeAnimal(title);
   const postId = `post-${Date.now()}`;
+  const delayed = document.querySelector("#delay-post").checked;
+  const approximate = document.querySelector("#approx-location").checked;
+  const createdAt = Date.now();
+  const availableAt = delayed ? createdAt + 1000 * 60 * 15 : createdAt;
   let storedMediaUrl = mediaDataUrl;
   if (selectedMediaFile) {
     status.textContent = "Uploading media...";
@@ -1195,16 +1317,17 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
     title,
     category,
     caption,
-    location: "UCI campus fuzzy area",
+    location: approximate ? "Aldrich Park fuzzy area" : "Aldrich Park",
     distance: "0.1 mi",
-    createdAt: Date.now(),
+    createdAt,
+    availableAt,
     tags,
-    emoji: category === "Bird" ? "🦆" : category === "Mammal" ? "🐾" : "🦎",
+    emoji: animalEmoji(title, category),
     visibility,
-    delayed: document.querySelector("#delay-post").checked,
-    approximate: document.querySelector("#approx-location").checked,
+    delayed,
+    approximate,
     media: storedMediaUrl,
-    latlng: PrivacyService.campusRandomLatLng(),
+    latlng: PrivacyService.uploadLatLng(approximate),
     userId: user.id,
     author: user.displayName
   };
@@ -1212,7 +1335,9 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   state.posts.unshift(newPost);
   selectedPostId = newPost.id;
   StorageService.save();
-  const databaseResult = await DatabaseService.savePost(newPost);
+  const databaseResult = delayed
+    ? { ok: true, message: "Queued locally until the privacy delay expires." }
+    : await DatabaseService.savePost(newPost);
   event.target.reset();
   mediaDataUrl = "";
   selectedMediaFile = null;
@@ -1222,10 +1347,14 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   document.querySelector("#delay-post").checked = true;
   status.textContent = "";
   renderAll();
-  showScreen("map-screen");
-  MapService.focus(newPost);
+  if (delayed) {
+    showScreen("profile-screen");
+  } else {
+    showScreen("map-screen");
+    MapService.focus(newPost);
+  }
   if (databaseResult.ok) {
-    showToast(newPost.delayed ? "Sighting saved to Supabase with privacy delay" : "Sighting saved to Supabase");
+    showToast(newPost.delayed ? "Sighting queued for 15 minute privacy delay" : "Sighting uploaded to Supabase");
   } else {
     showToast(databaseResult.message);
   }
@@ -1283,6 +1412,10 @@ document.querySelector("#logout-button").addEventListener("click", async () => {
 document.querySelector("#edit-profile-button").addEventListener("click", () => {
   if (!requireAuth("edit your profile")) return;
   profileForm.hidden = !profileForm.hidden;
+  if (!profileForm.hidden) {
+    profileForm.scrollIntoView({ behavior: "smooth", block: "start" });
+    profileNameInput.focus();
+  }
 });
 
 accountVisibility.addEventListener("click", () => {

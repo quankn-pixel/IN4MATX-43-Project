@@ -95,3 +95,27 @@ test("app shell exposes service status panel for demo visibility", () => {
   });
   assert.ok(app.includes("renderServiceStatuses"));
 });
+
+test("profile tabs and saved sightings have real app wiring", () => {
+  const html = read("index.html");
+  const app = read("app.js");
+  assert.ok(html.includes('data-profile-tab="grid"'));
+  assert.ok(html.includes('data-profile-tab="map"'));
+  assert.ok(html.includes('data-profile-tab="saved"'));
+  assert.ok(app.includes("activeProfileTab"));
+  assert.ok(app.includes("toggleSavedPost"));
+  assert.ok(app.includes("isPostSaved"));
+});
+
+test("upload and post management avoid the known demo regressions", () => {
+  const html = read("index.html");
+  const app = read("app.js");
+  const schema = read("database/schema.sql");
+  assert.ok(!html.includes("menu-mark"));
+  assert.ok(html.includes("Upload →"));
+  assert.ok(app.includes('const STORAGE_KEY = "wildspot-state-v3"'));
+  assert.ok(app.includes("animalEmoji(title, category)"));
+  assert.ok(app.includes("PrivacyService.uploadLatLng"));
+  assert.ok(app.includes("deletePost(postId)"));
+  assert.ok(schema.includes('"posts can be deleted by client"'));
+});

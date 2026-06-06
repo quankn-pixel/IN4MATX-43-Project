@@ -98,7 +98,7 @@ The README file in Hw4 contains instructions for launching the app.
 
 ## Part 2 - Tests Implemented + Report
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 ### 2.1 Required minimums
 
@@ -107,26 +107,28 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 | Unit tests | Required | >= 5 tests |
 | Integration tests | Required | >= 3 tests |
 
-Status: implemented 7 unit tests and 10 integration tests.
+Status: implemented 7 unit tests and 12 integration tests.
 
 ### 2.3 Tests by category
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 | Category | Count | 2+ examples |
 | --- | ---: | --- |
 | Unit | 7 | `normalizeTags adds missing hash prefixes`; `isUciEmail accepts only UCI email addresses`; `createReport returns a moderator-ready report record` |
-| Integration | 10 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts` |
+| Integration | 12 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring` |
 
-Latest result: 17 passing, 0 failing, duration ~82 ms.
-Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-02.
+Latest result: 19 passing, 0 failing, duration ~83 ms.
+Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-05.
 
 ### 2.4 Where the tests live + how to run them
 
 ```text
 src/core.js
 tests/unit/core.test.js
+tests/unit/index.html
 tests/integration/app-contract.test.js
+tests/integration/index.html
 coverage/index.html
 ```
 
@@ -146,7 +148,7 @@ Approximate runtimes:
 
 ### 2.5 Coverage achieved
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 | Test type | Tool | Coverage % |
 | --- | --- | --- |

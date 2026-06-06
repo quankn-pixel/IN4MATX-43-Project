@@ -91,6 +91,11 @@ create policy "posts can be inserted by client"
   on public.posts for insert
   with check (true);
 
+drop policy if exists "posts can be deleted by client" on public.posts;
+create policy "posts can be deleted by client"
+  on public.posts for delete
+  using (true);
+
 drop policy if exists "follows are readable" on public.follows;
 create policy "follows are readable"
   on public.follows for select

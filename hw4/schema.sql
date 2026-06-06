@@ -29,14 +29,27 @@ create table if not exists public.posts (
   created_at bigint not null
 );
 
+create table if not exists public.follows (
+  id text primary key default gen_random_uuid()::text,
+  follower_id text not null references public.profiles(id) on delete cascade,
+  target_key text not null,
+  target_label text not null,
+  created_at bigint not null,
+  unique (follower_id, target_key)
+);
+
 create table if not exists public.nearby_messages (
   id text primary key,
   user_id text references public.profiles(id) on delete set null,
   author text not null,
   text text not null,
+  room text not null default 'near-me',
   mine boolean not null default false,
   created_at bigint not null
 );
+
+alter table public.nearby_messages
+  add column if not exists room text not null default 'near-me';
 
 create table if not exists public.reports (
   id text primary key,
@@ -48,6 +61,7 @@ create table if not exists public.reports (
 
 alter table public.profiles enable row level security;
 alter table public.posts enable row level security;
+alter table public.follows enable row level security;
 alter table public.nearby_messages enable row level security;
 alter table public.reports enable row level security;
 
@@ -76,6 +90,26 @@ drop policy if exists "posts can be inserted by client" on public.posts;
 create policy "posts can be inserted by client"
   on public.posts for insert
   with check (true);
+
+drop policy if exists "posts can be deleted by client" on public.posts;
+create policy "posts can be deleted by client"
+  on public.posts for delete
+  using (true);
+
+drop policy if exists "follows are readable" on public.follows;
+create policy "follows are readable"
+  on public.follows for select
+  using (true);
+
+drop policy if exists "follows can be inserted by client" on public.follows;
+create policy "follows can be inserted by client"
+  on public.follows for insert
+  with check (true);
+
+drop policy if exists "follows can be deleted by client" on public.follows;
+create policy "follows can be deleted by client"
+  on public.follows for delete
+  using (true);
 
 drop policy if exists "messages are readable" on public.nearby_messages;
 create policy "messages are readable"
@@ -111,3 +145,10 @@ create policy "sightings media can be updated by client"
   on storage.objects for update
   using (bucket_id = 'sightings-media')
   with check (bucket_id = 'sightings-media');
+
+do $$
+begin
+  alter publication supabase_realtime add table public.nearby_messages;
+exception
+  when duplicate_object then null;
+end $$;

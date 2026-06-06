@@ -61,10 +61,10 @@
   <body>
     <main>
       <h1>Wildspot Integration Test Report</h1>
-      <p><strong>Last updated:</strong> 2026-06-02</p>
+      <p><strong>Last updated:</strong> 2026-06-05</p>
       <p><strong>Source test file:</strong> <code>tests/integration/app-contract.test.js</code></p>
       <p><strong>Run command:</strong> <code>npm test</code></p>
-      <p><strong>Status:</strong> <span class="pass">10 integration tests passing</span></p>
+      <p><strong>Status:</strong> <span class="pass">12 integration tests passing</span></p>
 
       <h2>Test Cases</h2>
       <table>
@@ -136,6 +136,18 @@
             <td><code>app shell exposes service status panel for demo visibility</code></td>
             <td>Demo status UI and service health indicators.</td>
             <td>The shell exposes database, auth, storage, and realtime status markers, and the app can render them.</td>
+          </tr>
+          <tr>
+            <td>11</td>
+            <td><code>profile tabs and saved sightings have real app wiring</code></td>
+            <td>Profile grid, map view, and saved sightings.</td>
+            <td>The app exposes profile tabs and includes saved sighting state helpers.</td>
+          </tr>
+          <tr>
+            <td>12</td>
+            <td><code>upload and post management avoid the known demo regressions</code></td>
+            <td>Upload UI, post location, animal icons, menu removal, and delete support.</td>
+            <td>The upload button is named clearly, menu markup is removed, uploaded posts use stable UCI positioning, and own posts can be deleted.</td>
           </tr>
         </tbody>
       </table>

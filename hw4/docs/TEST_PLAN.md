@@ -1,6 +1,6 @@
 # Wildspot Test Plan and Implementation Report
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 ## Part 1 - Test Plan (Strategic)
 
@@ -70,7 +70,7 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 
 ## Part 2 - Tests Implemented + Report
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 ### 2.1 Required minimums
 
@@ -79,19 +79,19 @@ Last updated: 2026-06-02 (commit: uncommitted local snapshot)
 | Unit tests | Required | >= 5 tests |
 | Integration tests | Required | >= 3 tests |
 
-Status: implemented 7 unit tests and 10 integration tests.
+Status: implemented 7 unit tests and 12 integration tests.
 
 ### 2.3 Tests by category
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 | Category | Count | 2+ examples |
 | --- | ---: | --- |
 | Unit | 7 | `normalizeTags adds missing hash prefixes`; `isUciEmail accepts only UCI email addresses`; `createReport returns a moderator-ready report record` |
-| Integration | 10 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts` |
+| Integration | 12 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring` |
 
-Latest result: 17 passing, 0 failing, duration ~82 ms.
-Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-02.
+Latest result: 19 passing, 0 failing, duration ~83 ms.
+Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-05.
 
 ### 2.4 Where the tests live + how to run them
 
@@ -120,7 +120,7 @@ Approximate runtimes:
 
 ### 2.5 Coverage achieved
 
-Last updated: 2026-06-02 (commit: uncommitted local snapshot)
+Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 
 | Test type | Tool | Coverage % |
 | --- | --- | --- |
@@ -157,4 +157,4 @@ The AI assistant helped most with separating testable logic from UI code, drafti
 | --- | --- | --- |
 | 2026-05-29 | Jianhao Zhang, Codex | Reviewed assignment testing requirements, added Node test runner setup, created unit/integration tests, and drafted the test plan/report. |
 | 2026-05-29 | Jianhao Zhang, Codex | Connected Supabase Auth, database tables, Storage image uploads, and Realtime chat; updated tests and documentation snapshots. |
-| 2026-06-02 | Jianhao Zhang, Codex | Verified 17 automated tests, updated the test plan snapshot, and documented current Supabase chat-room/follow persistence gaps. |
+| 2026-06-05 | Jianhao Zhang, Codex | Verified 19 automated tests, fixed high-priority demo bugs, updated the test plan snapshot, and documented current Supabase chat-room/follow persistence gaps. |

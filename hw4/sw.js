@@ -1,4 +1,4 @@
-const CACHE_NAME = "wildspot-v23";
+const CACHE_NAME = "wildspot-v24";
 const ASSETS = ["./", "./index.html", "./styles.css", "./src/config.js", "./src/core.js", "./app.js", "./manifest.json", "./icon.svg"];
 
 self.addEventListener("install", (event) => {
