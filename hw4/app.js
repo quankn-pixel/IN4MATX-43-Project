@@ -115,6 +115,7 @@ let selectedPostId = state.posts[0]?.id;
 let authMode = "signin";
 let activeChatRoom = "near-me";
 let activeProfileTab = "grid";
+let userLocationFocus = false;
 let toastTimer;
 
 const screens = document.querySelectorAll(".screen");
@@ -145,6 +146,10 @@ const toast = document.querySelector("#toast");
 const mediaInput = document.querySelector("#media-input");
 const mediaPicker = document.querySelector("#media-picker");
 const mediaPreview = document.querySelector("#media-preview");
+const mediaControls = document.querySelector("#media-controls");
+const mediaFit = document.querySelector("#media-fit");
+const mediaPositionX = document.querySelector("#media-position-x");
+const mediaPositionY = document.querySelector("#media-position-y");
 const appShell = document.querySelector(".app-shell");
 const authGate = document.querySelector("#auth-gate");
 const authForm = document.querySelector("#auth-form");
@@ -193,6 +198,23 @@ const chatRooms = {
     placeholder: "Message Neighborhood Watch..."
   }
 };
+
+function defaultCommentsForPost(post) {
+  return [
+    {
+      id: `comment-${post.id}-1`,
+      author: "BirdTrail_22",
+      text: "Thanks for keeping the location blurred.",
+      createdAt: Date.now() - 1000 * 60 * 28
+    },
+    {
+      id: `comment-${post.id}-2`,
+      author: "NatureLens_CA",
+      text: "Great sighting. I will keep distance if I pass through that area.",
+      createdAt: Date.now() - 1000 * 60 * 12
+    }
+  ];
+}
 
 function setServiceStatus(service, stateName, label) {
   const item = document.querySelector(`[data-service="${service}"]`);
@@ -734,6 +756,7 @@ const MapService = {
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const latlng = [position.coords.latitude, position.coords.longitude];
+        userLocationFocus = true;
         if (this.map) {
           this.map.flyTo(latlng, 16);
           if (this.userLocationCircle) {
@@ -746,6 +769,11 @@ const MapService = {
       },
       () => showToast("Location permission denied")
     );
+  },
+  focusPlace(place) {
+    if (!this.map || !place?.latlng) return;
+    userLocationFocus = false;
+    this.map.flyTo(place.latlng, 17, { duration: 0.35 });
   }
 };
 
@@ -787,6 +815,9 @@ function migrateState(nextState) {
   migrated.posts = migrated.posts.map((post) => ({
     ...post,
     media: post.media || demoMediaById[post.id] || "",
+    mediaFit: post.mediaFit || "cover",
+    mediaPosition: post.mediaPosition || "50% 50%",
+    comments: Array.isArray(post.comments) ? post.comments : post.userId ? [] : defaultCommentsForPost(post),
     availableAt: post.availableAt || post.createdAt || Date.now(),
     emoji: isChosenSightingIcon(post.emoji) ? post.emoji : animalEmoji(post.title, post.category)
   }));
@@ -913,13 +944,25 @@ function postMatches(post) {
   return isPostAvailable(post) && (activeFilter === "all" || post.category === activeFilter) && (!query || text.includes(query));
 }
 
+function matchingCampusPlace() {
+  const query = searchInput.value.trim().toLowerCase();
+  if (!query) return null;
+  return campusPlaces.find((place) => place.name.toLowerCase().includes(query) || query.includes(place.name.toLowerCase()));
+}
+
 function filteredPosts() {
   return state.posts.filter(postMatches).sort((a, b) => b.createdAt - a.createdAt);
 }
 
+function mediaStyle(post) {
+  const fit = post.mediaFit === "contain" ? "contain" : "cover";
+  const position = post.mediaPosition || "50% 50%";
+  return `style="object-fit:${fit}; object-position:${escapeHtml(position)};"`;
+}
+
 function mediaMarkup(post, className) {
   if (post.media) {
-    return `<div class="${className}"><img src="${post.media}" alt="${escapeHtml(post.title)}" /></div>`;
+    return `<div class="${className}"><img src="${post.media}" alt="${escapeHtml(post.title)}" ${mediaStyle(post)} /></div>`;
   }
   return `<div class="${className}" aria-hidden="true">${displayEmoji(post)}</div>`;
 }
@@ -935,10 +978,12 @@ function isOwnPost(post) {
 
 function renderMap() {
   const visiblePosts = filteredPosts();
+  const campusMatch = matchingCampusPlace();
   const visiblePhotoCount = visiblePosts.filter((post) => post.media).length;
   const countForMap = visiblePhotoCount || visiblePosts.length;
   const countLabel = `${countForMap} ${countForMap === 1 ? "photo sighting" : "photo sightings"}`;
   MapService.render(visiblePosts);
+  if (campusMatch && !visiblePosts.length) MapService.focusPlace(campusMatch);
 
   resultCount.textContent = `${visiblePosts.length} ${visiblePosts.length === 1 ? "post" : "posts"}`;
   if (mapCountBadge) mapCountBadge.textContent = countLabel;
@@ -953,7 +998,7 @@ function renderMap() {
         <span class="tag-row">${post.tags.slice(0, 3).map((tag) => `<span class="tag">${escapeHtml(tag)}</span>`).join("")}</span>
       </span>
     </button>
-  `).join("") || `<p class="form-status">No sightings found. Try another tag or category.</p>`;
+  `).join("") || `<p class="form-status">${campusMatch ? `Map focused on ${escapeHtml(campusMatch.name)}. No matching sightings there yet.` : "No sightings found. Try another tag or category."}</p>`;
 }
 
 function renderSightings() {
@@ -991,6 +1036,7 @@ function openPost(id) {
   const following = AuthService.isFollowing(authorKey);
   const ownPost = isOwnPost(post);
   const saved = isPostSaved(post.id);
+  const comments = Array.isArray(post.comments) ? post.comments : [];
   detailCard.innerHTML = `
     ${mediaMarkup(post, "detail-media")}
     <section class="detail-author">
@@ -1015,15 +1061,26 @@ function openPost(id) {
       </div>
     </div>
     <section class="community-block">
-      <h2>Community</h2>
-      <div class="comment-box">
+      <h2>Community (${comments.length})</h2>
+      <form class="comment-box" id="comment-form">
         <div class="comment-avatar">${escapeHtml(initial)}</div>
-        <textarea placeholder="Add a respectful comment..."></textarea>
+        <textarea id="comment-input" placeholder="Add a respectful comment..."></textarea>
+        <button class="comment-submit" type="submit">Post Comment</button>
+      </form>
+      <div class="comment-list">
+        ${comments.map((comment) => `
+          <article class="comment">
+            <div class="comment-avatar">${escapeHtml((comment.author || "W").slice(0, 1).toUpperCase())}</div>
+            <div>
+              <strong>${escapeHtml(comment.author || "Wildspotter")} · ${timeAgo(comment.createdAt)}</strong>
+              <p>${escapeHtml(comment.text)}</p>
+            </div>
+          </article>
+        `).join("") || `<p class="empty-chat">No comments yet.</p>`}
       </div>
-      <p class="empty-chat">No comments yet.</p>
     </section>
   `;
-  MapService.focus(post);
+  if (!userLocationFocus) MapService.focus(post);
   MapService.render(filteredPosts());
   showScreen("detail-screen");
 }
@@ -1033,6 +1090,23 @@ function renderProfile() {
   const availablePosts = state.posts.filter(isPostAvailable);
   const userPosts = user ? state.posts.filter((post) => !post.userId || post.userId === user.id) : state.posts;
   const savedPosts = availablePosts.filter((post) => isPostSaved(post.id));
+  const followingKeys = user?.following || [];
+  const followingAuthors = followingKeys.map((key) => {
+    const post = state.posts.find((item) => authorKeyForPost(item) === key);
+    return {
+      key,
+      name: post?.author || key.replace(/^author:|^user:/, ""),
+      detail: post ? `${post.title} · ${post.location}` : "Followed tracker"
+    };
+  });
+  const followerAuthors = state.posts
+    .filter((post) => post.author && !isOwnPost(post))
+    .slice(0, 3)
+    .map((post) => ({
+      key: authorKeyForPost(post),
+      name: post.author,
+      detail: `Interested in ${post.title}`
+    }));
   if (user) {
     profileAvatar.textContent = user.displayName.slice(0, 1).toUpperCase();
     profileTitle.textContent = user.displayName;
@@ -1043,8 +1117,8 @@ function renderProfile() {
     profileVisibilityInput.value = user.visibility;
   }
   profilePostCount.textContent = userPosts.length;
-  if (profileFollowerCount) profileFollowerCount.textContent = 0;
-  if (profileFollowingCount) profileFollowingCount.textContent = user?.following?.length || 0;
+  if (profileFollowerCount) profileFollowerCount.textContent = followerAuthors.length;
+  if (profileFollowingCount) profileFollowingCount.textContent = followingAuthors.length;
   document.querySelectorAll("[data-profile-tab]").forEach((button) => {
     button.classList.toggle("active", button.dataset.profileTab === activeProfileTab);
   });
@@ -1076,6 +1150,21 @@ function renderProfile() {
         </span>
       </button>
     `).join("") || `<p class="form-status">No saved sightings yet. Tap Save on a post detail.</p>`;
+    return;
+  }
+
+  if (activeProfileTab === "followers" || activeProfileTab === "following") {
+    const rows = activeProfileTab === "followers" ? followerAuthors : followingAuthors;
+    profileGrid.className = "profile-map-list";
+    profileGrid.innerHTML = rows.map((person) => `
+      <article class="connection-row">
+        <div class="comment-avatar">${escapeHtml(person.name.slice(0, 1).toUpperCase())}</div>
+        <span>
+          <strong>${escapeHtml(person.name)}</strong>
+          <p>${escapeHtml(person.detail)}</p>
+        </span>
+      </article>
+    `).join("") || `<p class="form-status">${activeProfileTab === "followers" ? "No followers yet." : "You are not following anyone yet."}</p>`;
     return;
   }
 
@@ -1234,6 +1323,26 @@ document.addEventListener("click", async (event) => {
   }
 });
 
+document.addEventListener("submit", (event) => {
+  if (event.target.id !== "comment-form") return;
+  event.preventDefault();
+  const post = state.posts.find((item) => item.id === selectedPostId);
+  const input = document.querySelector("#comment-input");
+  const text = input?.value.trim();
+  if (!post || !text) return;
+  const user = AuthService.currentUser();
+  post.comments ||= [];
+  post.comments.unshift({
+    id: `comment-${Date.now()}`,
+    author: user?.displayName || "Wildspotter",
+    text,
+    createdAt: Date.now()
+  });
+  StorageService.save();
+  openPost(post.id);
+  showToast("Comment added");
+});
+
 document.querySelector("#sightings-refresh")?.addEventListener("click", async () => {
   if (DatabaseService.ready) {
     await DatabaseService.load();
@@ -1256,6 +1365,13 @@ document.addEventListener("click", (event) => {
   renderProfile();
 });
 
+document.addEventListener("click", (event) => {
+  const panelButton = event.target.closest("[data-profile-panel]");
+  if (!panelButton) return;
+  activeProfileTab = panelButton.dataset.profilePanel;
+  renderProfile();
+});
+
 filterRow.addEventListener("click", (event) => {
   const button = event.target.closest("[data-filter]");
   if (!button) return;
@@ -1264,7 +1380,10 @@ filterRow.addEventListener("click", (event) => {
   renderMap();
 });
 
-searchInput.addEventListener("input", renderMap);
+searchInput.addEventListener("input", () => {
+  userLocationFocus = false;
+  renderMap();
+});
 
 document.querySelector(".species-chips")?.addEventListener("click", (event) => {
   const chip = event.target.closest("button");
@@ -1290,8 +1409,20 @@ mediaInput.addEventListener("change", () => {
     mediaDataUrl = String(reader.result);
     mediaPreview.src = mediaDataUrl;
     mediaPicker.classList.add("has-media");
+    if (mediaControls) mediaControls.hidden = false;
+    applyMediaPreviewControls();
   });
   reader.readAsDataURL(file);
+});
+
+function applyMediaPreviewControls() {
+  if (!mediaPreview) return;
+  mediaPreview.style.objectFit = mediaFit?.value || "cover";
+  mediaPreview.style.objectPosition = `${mediaPositionX?.value || 50}% ${mediaPositionY?.value || 50}%`;
+}
+
+[mediaFit, mediaPositionX, mediaPositionY].forEach((control) => {
+  control?.addEventListener("input", applyMediaPreviewControls);
 });
 
 document.querySelector("#upload-form").addEventListener("submit", async (event) => {
@@ -1347,6 +1478,8 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
     delayed,
     approximate,
     media: storedMediaUrl,
+    mediaFit: mediaFit?.value || "cover",
+    mediaPosition: `${mediaPositionX?.value || 50}% ${mediaPositionY?.value || 50}%`,
     latlng: PrivacyService.uploadLatLng(approximate),
     userId: user.id,
     author: user.displayName
@@ -1362,7 +1495,12 @@ document.querySelector("#upload-form").addEventListener("submit", async (event) 
   mediaDataUrl = "";
   selectedMediaFile = null;
   mediaPreview.removeAttribute("src");
+  mediaPreview.removeAttribute("style");
   mediaPicker.classList.remove("has-media");
+  if (mediaControls) mediaControls.hidden = true;
+  if (mediaFit) mediaFit.value = "cover";
+  if (mediaPositionX) mediaPositionX.value = 50;
+  if (mediaPositionY) mediaPositionY.value = 50;
   document.querySelector("#approx-location").checked = true;
   document.querySelector("#delay-post").checked = true;
   document.querySelector('input[name="sighting-icon"][value="🐰"]').checked = true;
@@ -1386,7 +1524,12 @@ document.querySelector("#cancel-upload").addEventListener("click", () => {
   mediaDataUrl = "";
   selectedMediaFile = null;
   mediaPreview.removeAttribute("src");
+  mediaPreview.removeAttribute("style");
   mediaPicker.classList.remove("has-media");
+  if (mediaControls) mediaControls.hidden = true;
+  if (mediaFit) mediaFit.value = "cover";
+  if (mediaPositionX) mediaPositionX.value = 50;
+  if (mediaPositionY) mediaPositionY.value = 50;
   showScreen("map-screen");
 });
 

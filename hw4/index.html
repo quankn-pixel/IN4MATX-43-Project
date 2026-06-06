@@ -105,6 +105,23 @@
             </span>
             <img id="media-preview" alt="" />
           </label>
+          <div class="media-controls" id="media-controls" hidden>
+            <label>
+              Image display
+              <select id="media-fit">
+                <option value="cover">Crop to fill</option>
+                <option value="contain">Show full image</option>
+              </select>
+            </label>
+            <label>
+              Horizontal focus
+              <input id="media-position-x" type="range" min="0" max="100" value="50" />
+            </label>
+            <label>
+              Vertical focus
+              <input id="media-position-y" type="range" min="0" max="100" value="50" />
+            </label>
+          </div>
 
           <div class="form-grid">
             <label>
@@ -216,9 +233,9 @@
           <div class="profile-row">
             <div class="avatar" id="profile-avatar">W</div>
             <div class="profile-stats">
-              <div class="profile-stat"><strong id="profile-post-count">0</strong><span>Posts</span></div>
-              <div class="profile-stat"><strong id="profile-follower-count">0</strong><span>Followers</span></div>
-              <div class="profile-stat"><strong id="profile-following-count">0</strong><span>Following</span></div>
+              <button class="profile-stat" type="button" data-profile-panel="grid"><strong id="profile-post-count">0</strong><span>Posts</span></button>
+              <button class="profile-stat" type="button" data-profile-panel="followers"><strong id="profile-follower-count">0</strong><span>Followers</span></button>
+              <button class="profile-stat" type="button" data-profile-panel="following"><strong id="profile-following-count">0</strong><span>Following</span></button>
             </div>
           </div>
           <h1 id="profile-title">Wildspotter</h1>

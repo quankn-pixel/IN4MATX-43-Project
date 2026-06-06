@@ -79,7 +79,7 @@ Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 | Unit tests | Required | >= 5 tests |
 | Integration tests | Required | >= 3 tests |
 
-Status: implemented 7 unit tests and 13 integration tests.
+Status: implemented 7 unit tests and 14 integration tests.
 
 ### 2.3 Tests by category
 
@@ -88,9 +88,9 @@ Last updated: 2026-06-05 (commit: uncommitted local snapshot)
 | Category | Count | 2+ examples |
 | --- | ---: | --- |
 | Unit | 7 | `normalizeTags adds missing hash prefixes`; `isUciEmail accepts only UCI email addresses`; `createReport returns a moderator-ready report record` |
-| Integration | 13 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring`; `map and profile icons are derived from species instead of stale stored emoji` |
+| Integration | 14 | `app shell wires Leaflet, shared core, and application scripts`; `application script is valid JavaScript`; `database schema and app include persistent follows`; `application subscribes to realtime nearby chat inserts`; `profile tabs and saved sightings have real app wiring`; `map and profile icons are derived from species instead of stale stored emoji`; `remaining demo controls have working app hooks` |
 
-Latest result: 20 passing, 0 failing, duration ~88 ms.
+Latest result: 21 passing, 0 failing, duration ~89 ms.
 Latest backend snapshot: Supabase Auth, tables, `sightings-media` bucket, Storage upload, `nearby_messages.room`, Realtime chat, and `follows` schema/write path documented on 2026-06-05.
 
 ### 2.4 Where the tests live + how to run them
@@ -157,4 +157,4 @@ The AI assistant helped most with separating testable logic from UI code, drafti
 | --- | --- | --- |
 | 2026-05-29 | Jianhao Zhang, Codex | Reviewed assignment testing requirements, added Node test runner setup, created unit/integration tests, and drafted the test plan/report. |
 | 2026-05-29 | Jianhao Zhang, Codex | Connected Supabase Auth, database tables, Storage image uploads, and Realtime chat; updated tests and documentation snapshots. |
-| 2026-06-05 | Jianhao Zhang, Codex | Verified 20 automated tests, fixed high-priority demo bugs, updated the test plan snapshot, and documented current Supabase chat-room/follow persistence gaps. |
+| 2026-06-05 | Jianhao Zhang, Codex | Verified 21 automated tests, fixed high-priority demo bugs, updated the test plan snapshot, and documented current Supabase chat-room/follow persistence gaps. |

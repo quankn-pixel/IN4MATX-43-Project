@@ -114,15 +114,30 @@ test("upload and post management avoid the known demo regressions", () => {
   assert.ok(!html.includes("menu-mark"));
   assert.ok(html.includes("Upload →"));
   assert.ok(html.includes('name="sighting-icon"'));
+  assert.ok(html.includes('id="media-controls"'));
+  assert.ok(html.includes('id="media-fit"'));
   ["Dangerous", "Cute", "Funny", "Interaction"].forEach((label) => {
     assert.ok(html.includes(label), `${label} icon option missing`);
   });
   assert.ok(app.includes('const STORAGE_KEY = "wildspot-state-v3"'));
   assert.ok(app.includes("animalEmoji(title, category)"));
   assert.ok(app.includes("selectedSightingIcon()"));
+  assert.ok(app.includes("mediaFit: mediaFit?.value"));
   assert.ok(app.includes("PrivacyService.uploadLatLng"));
   assert.ok(app.includes("deletePost(postId)"));
   assert.ok(schema.includes('"posts can be deleted by client"'));
+});
+
+test("remaining demo controls have working app hooks", () => {
+  const html = read("index.html");
+  const app = read("app.js");
+  assert.ok(html.includes('data-profile-panel="followers"'));
+  assert.ok(html.includes('data-profile-panel="following"'));
+  assert.ok(app.includes("matchingCampusPlace"));
+  assert.ok(app.includes("MapService.focusPlace"));
+  assert.ok(app.includes('id="comment-form"'));
+  assert.ok(app.includes("post.comments.unshift"));
+  assert.ok(app.includes("userLocationFocus"));
 });
 
 test("map and profile icons are derived from species instead of stale stored emoji", () => {
